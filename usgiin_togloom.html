@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Үсгийн тоглоом</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;800&family=Rubik:wght@600;800&family=Noto+Sans+Mongolian&display=swap" rel="stylesheet">
+<style>
+/* Layout: one centered column. Header with star count, three mode tabs, then the active game panel. */
+:root {
+  --bg: #eef3ff;
+  --surface: #ffffff;
+  --ink: #17254a;
+  --muted: #5a688c;
+  --line: #cfdaf5;
+  --accent: #3d6df2;
+  --on-accent: #ffffff;
+  --star: #f2a900;
+  --vowel-bg: #ffe2dc;
+  --vowel-fg: #a8231a;
+  --cons-bg: #dbe6ff;
+  --cons-fg: #1d47c0;
+  --good: #1f9d68;
+  --good-bg: #d6f5e7;
+  --bad: #d6403a;
+  --bad-bg: #ffe0dd;
+  --pad-bg: #cdf3df;
+  --pad-fg: #0d6b45;
+  --accent-deep: #2a50c4;
+  --dot: #d8e2fb;
+  --hero-tint: #dfe8ff;
+  --sun: #ffd04d;
+  --cloud: #ffffff;
+  --hill1: #bfe8c4;
+  --hill2: #9fd9ab;
+  --ger: #ffffff;
+  --gerroof: #dfe7fb;
+  --horse: #8a5f3d;
+  --sheep: #ffffff;
+  --font-display: "Rubik", "Arial Rounded MT Bold", "Segoe UI", sans-serif;
+  --font-body: "Nunito", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111b36; --surface: #1a2850; --ink: #eaf0ff; --muted: #a2b1d8; --line: #2d3f75;
+    --accent: #86a3ff; --on-accent: #0e1730; --star: #ffd04d;
+    --vowel-bg: #4a2622; --vowel-fg: #ffb8ad; --cons-bg: #223a73; --cons-fg: #bccfff;
+    --good: #4fd69b; --good-bg: #14463a; --bad: #ff8a82; --bad-bg: #55252a; --pad-bg: #14463a; --pad-fg: #9af0c6; --accent-deep: #4560c4; --dot: #1b2a55; --hero-tint: #24407f; --sun: #ffe08a; --cloud: #3a4f8f; --hill1: #1d3b45; --hill2: #17313a; --ger: #d9e2ff; --gerroof: #a9b8e8; --horse: #c79a72; --sheep: #e6ecff;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111b36; --surface: #1a2850; --ink: #eaf0ff; --muted: #a2b1d8; --line: #2d3f75;
+  --accent: #86a3ff; --on-accent: #0e1730; --star: #ffd04d;
+  --vowel-bg: #4a2622; --vowel-fg: #ffb8ad; --cons-bg: #223a73; --cons-fg: #bccfff;
+  --good: #4fd69b; --good-bg: #14463a; --bad: #ff8a82; --bad-bg: #55252a; --pad-bg: #14463a; --pad-fg: #9af0c6; --accent-deep: #4560c4; --dot: #1b2a55; --hero-tint: #24407f; --sun: #ffe08a; --cloud: #3a4f8f; --hill1: #1d3b45; --hill2: #17313a; --ger: #d9e2ff; --gerroof: #a9b8e8; --horse: #c79a72; --sheep: #e6ecff;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.45;
+  padding-block: 20px 32px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
+header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font-family: var(--font-display); font-weight: 800; font-size: 1.9rem; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+.stars { background: var(--surface); border: 2px solid var(--line); border-radius: 999px; padding: 6px 14px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.stars b { color: var(--star); font-size: 1.15em; }
+.tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; }
+.tab { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; padding: 10px 6px; font-weight: 800; font-family: var(--font-display); font-size: 0.95rem; line-height: 1.2; min-height: 52px; }
+.tab[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.panel { display: flex; flex-direction: column; gap: 16px; }
+.card { background: var(--surface); border: 2px solid var(--line); border-radius: 22px; padding: 18px; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 0.9rem; color: var(--muted); font-weight: 600; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 14px; border-radius: 4px; margin-right: 6px; vertical-align: -2px; }
+.legend .lv::before { background: var(--vowel-bg); border: 2px solid var(--vowel-fg); }
+.legend .lc::before { background: var(--cons-bg); border: 2px solid var(--cons-fg); }
+
+/* Learn */
+.detail { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 18px; align-items: center; }
+.big { font-family: var(--font-display); font-weight: 800; font-size: clamp(4.2rem, 22vw, 7rem); line-height: 1; padding: 10px 18px; border-radius: 20px; text-align: center; }
+.big.v, .tile.v, .opt.v { background: var(--vowel-bg); color: var(--vowel-fg); }
+.big.c, .tile.c, .opt.c { background: var(--cons-bg); color: var(--cons-fg); }
+.word { font-family: var(--font-display); font-weight: 800; font-size: 1.7rem; margin: 0; overflow-wrap: anywhere; }
+.word mark { background: none; color: var(--accent); }
+.pic { font-size: 3.4rem; line-height: 1.1; }
+.kind { color: var(--muted); font-weight: 700; font-size: 0.95rem; margin: 0; }
+.nav { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.btn { background: var(--accent); color: var(--on-accent); border: 0; border-radius: 12px; padding: 10px 16px; font-weight: 800; min-height: 44px; }
+.btn.alt { background: var(--surface); color: var(--ink); border: 2px solid var(--line); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 8px; }
+.tile { border: 3px solid transparent; border-radius: 14px; aspect-ratio: 1; font-family: var(--font-display); font-weight: 800; font-size: 1.7rem; display: grid; place-items: center; }
+.tile[aria-pressed="true"] { border-color: var(--ink); transform: scale(1.06); }
+
+/* Quiz */
+.dots { display: flex; gap: 6px; }
+.dots i { flex: 1; height: 10px; border-radius: 6px; background: var(--line); }
+.dots i.done { background: var(--good); }
+.dots i.now { background: var(--accent); }
+.prompt { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.prompt .ask { margin: 0; font-weight: 800; color: var(--muted); }
+.prompt .target { font-family: var(--font-display); font-weight: 800; font-size: clamp(4.5rem, 24vw, 7.5rem); line-height: 1; color: var(--accent); }
+.prompt .pic { font-size: clamp(4rem, 20vw, 6rem); }
+.prompt .blank { font-family: var(--font-display); font-weight: 800; font-size: 2.2rem; }
+.blank u { display: inline-block; min-width: 1.2em; border-bottom: 5px dashed var(--accent); text-decoration: none; color: transparent; }
+.opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.opt { border: 3px solid transparent; border-radius: 20px; min-height: 104px; font-family: var(--font-display); font-weight: 800; font-size: 3.4rem; display: grid; place-items: center; }
+.opt.ok { background: var(--good-bg); color: var(--good); border-color: var(--good); }
+.opt.no { background: var(--bad-bg); color: var(--bad); border-color: var(--bad); animation: shake 0.35s; }
+.opt:disabled { cursor: default; }
+.opt.ok { animation: pop 0.4s; }
+@keyframes shake { 25% { transform: translateX(-8px); } 75% { transform: translateX(8px); } }
+@keyframes pop { 50% { transform: scale(1.08); } }
+.level { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-weight: 700; color: var(--muted); }
+.level .btn { padding: 6px 12px; min-height: 38px; }
+.level .btn[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.slots, .bank { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.blk, .slot { width: clamp(44px, 13vw, 64px); height: clamp(44px, 13vw, 64px); border-radius: 14px; }
+.blk { border: 3px solid transparent; font-family: var(--font-display); font-weight: 800; font-size: clamp(1.4rem, 7vw, 2rem); display: grid; place-items: center; box-shadow: 0 4px 0 var(--line); }
+.blk.v { background: var(--vowel-bg); color: var(--vowel-fg); }
+.blk.c { background: var(--cons-bg); color: var(--cons-fg); }
+.slot { border: 3px dashed var(--line); background: var(--bg); }
+.slots.ok .blk { background: var(--good-bg); color: var(--good); border-color: var(--good); }
+.slots.shake { animation: shake 0.35s; }
+.bankcard { min-height: 96px; display: flex; align-items: center; justify-content: center; }
+.fillword { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; font-family: var(--font-display); font-weight: 800; font-size: clamp(2rem, 10vw, 2.8rem); line-height: 1.2; }
+.gap { min-width: 1.1em; text-align: center; color: var(--accent); border-bottom: 5px dashed var(--accent); }
+.gap.on { color: var(--good); border-bottom-style: solid; border-bottom-color: var(--good); }
+.pairs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.pc { aspect-ratio: 1; border-radius: 16px; border: 3px solid var(--accent); background: var(--accent); color: var(--on-accent); font-family: var(--font-display); font-weight: 800; font-size: clamp(1.8rem, 9vw, 2.8rem); display: grid; place-items: center; touch-action: manipulation; }
+.pc.up.v { background: var(--vowel-bg); color: var(--vowel-fg); border-color: var(--vowel-fg); }
+.pc.up.c { background: var(--cons-bg); color: var(--cons-fg); border-color: var(--cons-fg); }
+.pc.got { border-color: var(--good); }
+.pophead { display: flex; justify-content: space-between; align-items: center; gap: 12px; font-weight: 800; padding: 12px 18px; }
+.ptarget { font-family: var(--font-display); font-size: 2.4rem; color: var(--accent); vertical-align: middle; }
+.pcount { font-variant-numeric: tabular-nums; color: var(--muted); }
+.field { position: relative; height: 360px; overflow: hidden; border-radius: 22px; border: 2px solid var(--line); background: var(--surface); touch-action: manipulation; user-select: none; -webkit-user-select: none; }
+.bub { position: absolute; left: 0; top: 0; width: 68px; height: 68px; border-radius: 50%; border: 3px solid; font-family: var(--font-display); font-weight: 800; font-size: 2rem; display: grid; place-items: center; will-change: transform; }
+.bub.v { background: var(--vowel-bg); color: var(--vowel-fg); border-color: var(--vowel-fg); }
+.bub.c { background: var(--cons-bg); color: var(--cons-fg); border-color: var(--cons-fg); }
+.bub.wrong { background: var(--bad-bg); color: var(--bad); border-color: var(--bad); }
+.hdr-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.hero { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px; padding: 28px 18px; }
+.hero .letters { display: flex; gap: 10px; }
+.hero .big { font-size: 3rem; padding: 8px 14px; }
+.hero h2 { font-family: var(--font-display); font-size: 1.7rem; margin: 0; text-wrap: balance; }
+.hero p { margin: 0; color: var(--muted); font-weight: 700; max-width: 34ch; }
+.start { font-size: 1.6rem; font-family: var(--font-display); font-weight: 800; padding: 14px 44px; min-height: 64px; border-radius: 18px; }
+.modes { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+.mode { background: var(--surface); border: 2px solid var(--line); border-radius: 18px; padding: 14px 16px; text-align: left; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.mode b { font-family: var(--font-display); font-size: 1.1rem; }
+.mode span { color: var(--muted); font-weight: 600; font-size: 0.92rem; }
+.modes-title { margin: 0; font-weight: 800; color: var(--muted); }
+.review { font-weight: 700; color: var(--muted); }
+.review b { color: var(--accent); font-family: var(--font-display); }
+.track { display: flex; gap: 6px; }
+.track i { flex: 1; height: 32px; border-radius: 999px; background: var(--line); text-align: center; line-height: 32px; font-style: normal; font-size: 1.2rem; }
+.track i.done { background: var(--pad-bg); }
+.track i.now { background: var(--accent); }
+.opts.pads { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.pad { background: var(--pad-bg); color: var(--pad-fg); border-radius: 999px; min-height: 96px; font-size: 2.8rem; }
+.pad:disabled:not(.ok) { opacity: 0.45; }
+.result { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 10px; padding-block: 12px; }
+.result .row { font-size: 3.2rem; letter-spacing: 6px; color: var(--star); }
+.result .row .off { color: var(--line); }
+.result h2 { font-family: var(--font-display); margin: 0; font-size: 1.7rem; }
+.result p { margin: 0; color: var(--muted); font-weight: 700; }
+@media (max-width: 420px) {
+  .detail { grid-template-columns: 1fr; justify-items: start; }
+  h1 { font-size: 1.6rem; }
+  .opt { font-size: 2.8rem; min-height: 92px; }
+}
+@media (prefers-reduced-motion: reduce) { .opt.no, .opt.ok, .tile { animation: none; transition: none; transform: none; } }
+
+/* Гоёчлол: товойсон товч, нүүрний хөдөлгөөн, цацраг */
+[hidden] { display: none !important; }
+body { background-image: radial-gradient(var(--dot) 1.5px, transparent 1.5px); background-size: 22px 22px; }
+h1 { display: flex; align-items: center; gap: 10px; }
+.logo { display: inline-grid; place-items: center; flex: none; width: 46px; height: 46px; border-radius: 14px; background: var(--accent); color: var(--on-accent); font-size: 1.4rem; transform: rotate(-6deg); box-shadow: 0 4px 0 var(--accent-deep); }
+.card { box-shadow: 0 6px 0 var(--line); }
+.btn { box-shadow: 0 4px 0 var(--accent-deep); transition: transform 0.08s, box-shadow 0.08s; }
+.btn.alt { box-shadow: 0 4px 0 var(--line); }
+.tab { box-shadow: 0 4px 0 var(--line); transition: transform 0.08s, box-shadow 0.08s; }
+.tab[aria-selected="true"] { box-shadow: 0 4px 0 var(--accent-deep); }
+.tile, .opt, .pc, .blk { box-shadow: 0 5px 0 color-mix(in srgb, currentColor 30%, transparent); transition: transform 0.08s, box-shadow 0.08s; }
+.pc:not(.up) { box-shadow: 0 5px 0 var(--accent-deep); }
+.mode { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; align-items: center; box-shadow: 0 5px 0 var(--line); transition: transform 0.08s, box-shadow 0.08s; }
+.btn:active, .tab:active, .mode:active, .opt:not(:disabled):active, .pc:active, .blk:active, .tile:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
+.stars { box-shadow: 0 4px 0 var(--line); }
+.stars.bump { animation: bump 0.5s; }
+@keyframes bump { 30% { transform: scale(1.18) rotate(-3deg); } 60% { transform: scale(0.96); } }
+.hero { position: relative; overflow: hidden; background: linear-gradient(160deg, var(--surface) 30%, var(--hero-tint)); padding: 34px 18px 30px; }
+.hero > * { position: relative; z-index: 1; }
+.hero h2 { font-size: clamp(1.7rem, 7vw, 2.3rem); }
+.hero .big { animation: bounce 2.2s ease-in-out infinite; box-shadow: 0 6px 0 color-mix(in srgb, currentColor 30%, transparent); }
+.hero .big:nth-child(2) { animation-delay: 0.25s; }
+.hero .big:nth-child(3) { animation-delay: 0.5s; }
+.hero .start { box-shadow: 0 6px 0 var(--accent-deep); }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.hero .deco { position: absolute; z-index: 0; font-family: var(--font-display); font-weight: 800; font-size: 2.6rem; opacity: 0.35; animation: floaty 6s ease-in-out infinite; pointer-events: none; }
+.deco.d1 { top: 10%; left: 5%; color: var(--vowel-fg); }
+.deco.d2 { top: 14%; right: 6%; color: var(--cons-fg); animation-delay: -2s; }
+.deco.d3 { bottom: 12%; left: 8%; color: var(--pad-fg); animation-delay: -4s; }
+.deco.d4 { bottom: 16%; right: 7%; color: var(--star); animation-delay: -1s; }
+@keyframes floaty { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-12px) rotate(6deg); } }
+.modes { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.mode b, .mode span { grid-column: 2; }
+.mode .badge { grid-column: 1; grid-row: span 2; width: 52px; height: 52px; border-radius: 16px; display: grid; place-items: center; font-style: normal; font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; background: var(--cons-bg); color: var(--cons-fg); }
+.mode:nth-child(4n+1) .badge { background: var(--vowel-bg); color: var(--vowel-fg); }
+.mode:nth-child(4n+3) .badge { background: var(--pad-bg); color: var(--pad-fg); }
+.mode:nth-child(4n+4) .badge { background: color-mix(in srgb, var(--star) 28%, var(--surface)); color: var(--ink); }
+.result .row { font-size: 4rem; animation: rise 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+@keyframes rise { from { transform: scale(0.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.prompt .target { text-shadow: 0 5px 0 color-mix(in srgb, var(--accent) 25%, transparent); }
+.bgscene { position: fixed; left: 0; right: 0; bottom: 0; width: 100%; height: clamp(110px, 22vh, 200px); z-index: -1; pointer-events: none; opacity: 0.75; }
+.heroscene { position: absolute; left: 0; bottom: 0; width: 100%; height: 130px; z-index: 0; pointer-events: none; }
+.hero { padding-bottom: 130px; }
+.sec { margin: 6px 0 0; font-weight: 800; color: var(--muted); }
+.grades { display: grid; grid-template-columns: repeat(auto-fill, minmax(52px, 1fr)); gap: 8px; }
+.gchip { background: var(--surface); border: 2px solid var(--line); border-radius: 14px; min-height: 48px; font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; box-shadow: 0 4px 0 var(--line); transition: transform 0.08s, box-shadow 0.08s; }
+.gchip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); box-shadow: 0 4px 0 var(--accent-deep); }
+.gchip:active { transform: translateY(3px); box-shadow: 0 1px 0 var(--line); }
+.gname { flex: 1; text-align: center; color: var(--ink); min-width: 0; }
+.qtext { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.25rem, 5.2vw, 1.8rem); line-height: 1.3; text-align: center; text-wrap: balance; overflow-wrap: anywhere; color: var(--ink); }
+.qtext.qm { font-size: clamp(1.7rem, 7.5vw, 2.6rem); }
+.mbwrap { display: flex; justify-content: center; margin-top: 10px; }
+.mb { writing-mode: vertical-lr; font-family: "Noto Sans Mongolian", "Mongolian Baiti", "Menksoft Qagan", serif; font-weight: 400; font-size: 3.2rem; line-height: 1.3; color: var(--accent); }
+.opts.t .opt { font-size: clamp(1.05rem, 4.4vw, 1.3rem); min-height: 76px; padding: 10px; text-align: center; line-height: 1.2; overflow-wrap: anywhere; }
+.level .btn:disabled { opacity: 0.4; cursor: default; }
+#fx { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 60; }
+.fx { position: absolute; left: 0; top: 0; will-change: transform, opacity; }
+@media (prefers-reduced-motion: reduce) {
+  .hero .deco, .hero .big, .stars.bump, .result .row { animation: none; }
+  .btn, .tab, .mode, .opt, .pc, .blk, .tile { transition: none; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="steppe" viewBox="0 0 800 200" preserveAspectRatio="xMidYMax slice">
+    <circle cx="660" cy="52" r="26" style="fill:var(--sun)"/>
+    <g style="fill:var(--cloud)" opacity="0.9"><ellipse cx="110" cy="44" rx="26" ry="10"/><ellipse cx="130" cy="36" rx="18" ry="10"/><ellipse cx="92" cy="38" rx="16" ry="8"/></g>
+    <g style="fill:var(--cloud)" opacity="0.85"><ellipse cx="420" cy="30" rx="24" ry="9"/><ellipse cx="438" cy="24" rx="16" ry="9"/></g>
+    <path d="M0 150 Q120 92 260 136 T520 126 T800 140 V200 H0Z" style="fill:var(--hill1)"/>
+    <g transform="translate(120 114)"><rect x="0" y="12" width="34" height="18" rx="2" style="fill:var(--ger)"/><path d="M-3 13 L17 0 L37 13Z" style="fill:var(--gerroof)"/><rect x="13" y="18" width="8" height="12" rx="1" style="fill:var(--accent)"/></g>
+    <g transform="translate(162 120)"><rect x="0" y="12" width="28" height="15" rx="2" style="fill:var(--ger)"/><path d="M-3 13 L14 1 L31 13Z" style="fill:var(--gerroof)"/><rect x="10" y="17" width="7" height="10" rx="1" style="fill:var(--accent)"/></g>
+    <g transform="translate(580 106)"><rect x="0" y="12" width="34" height="18" rx="2" style="fill:var(--ger)"/><path d="M-3 13 L17 0 L37 13Z" style="fill:var(--gerroof)"/><rect x="13" y="18" width="8" height="12" rx="1" style="fill:var(--accent)"/></g>
+    <path d="M0 176 Q160 132 330 166 T640 160 T800 168 V200 H0Z" style="fill:var(--hill2)"/>
+    <g transform="translate(450 146)" style="fill:var(--horse);stroke:var(--horse)"><ellipse cx="14" cy="10" rx="12" ry="6" stroke="none"/><path d="M22 6 L30 -4 L35 -2 L27 9Z" stroke="none"/><ellipse cx="36" cy="-2" rx="5" ry="3" stroke="none"/><path d="M7 14 V25 M11 14 V25 M19 14 V25 M23 14 V25" stroke-width="2" fill="none"/><path d="M2 8 Q-6 12 -4 20" stroke-width="2" fill="none"/></g>
+    <g style="fill:var(--sheep)"><ellipse cx="290" cy="172" rx="8" ry="5"/><ellipse cx="312" cy="176" rx="8" ry="5"/><ellipse cx="334" cy="171" rx="8" ry="5"/><ellipse cx="700" cy="170" rx="8" ry="5"/><ellipse cx="722" cy="174" rx="8" ry="5"/></g>
+    <g style="fill:var(--muted)"><circle cx="298" cy="171" r="2.6"/><circle cx="320" cy="175" r="2.6"/><circle cx="342" cy="170" r="2.6"/><circle cx="708" cy="169" r="2.6"/><circle cx="730" cy="173" r="2.6"/></g>
+  </symbol>
+</svg>
+<svg class="bgscene" aria-hidden="true" focusable="false"><use href="#steppe" width="100%" height="100%"/></svg>
+<div class="wrap">
+  <header>
+    <h1><span class="logo" aria-hidden="true">Үү</span>Үсгийн тоглоом</h1>
+    <div class="hdr-right">
+      <button class="btn alt" id="home" hidden>Нүүр</button>
+      <div class="stars" aria-live="polite">Одод: <b>★</b> <span id="total">0</span></div>
+    </div>
+  </header>
+  <div class="tabs" id="tabs" role="tablist" aria-label="Тоглоомын төрөл" hidden>
+    <button class="tab" role="tab" data-mode="learn" aria-selected="true">Үсэг үзэх</button>
+    <button class="tab" role="tab" data-mode="case" aria-selected="false">Том, жижиг</button>
+    <button class="tab" role="tab" data-mode="first" aria-selected="false">Эхний үсэг</button>
+    <button class="tab" role="tab" data-mode="jump" aria-selected="false">Үсэг үсрэх</button>
+    <button class="tab" role="tab" data-mode="build" aria-selected="false">Үг бүтээх</button>
+    <button class="tab" role="tab" data-mode="pairs" aria-selected="false">Хос олох</button>
+    <button class="tab" role="tab" data-mode="pop" aria-selected="false">Бөмбөлөг</button>
+    <button class="tab" role="tab" data-mode="fill" aria-selected="false">Дутуу үсэг</button>
+  </div>
+  <main id="panel" class="panel"></main>
+</div>
+
+<script>
+// [letter, example word, picture]
+var DATA = [
+  ["А","алим","🍎"],["Б","банана","🍌"],["В","вагон","🚃"],["Г","гахай","🐖"],["Д","дугуй","🚲"],
+  ["Е","ерөөл",""],["Ё","ёс",""],["Ж","жимс","🍇"],["З","загас","🐟"],["И","ирвэс","🐆"],
+  ["Й","",""],["К","кино","🎬"],["Л","лаа","🕯️"],["М","муур","🐱"],["Н","нохой","🐶"],
+  ["О","од","⭐"],["Ө","өндөг","🥚"],["П","пицца","🍕"],["Р","радио","📻"],["С","сар","🌙"],
+  ["Т","тахиа","🐔"],["У","уул","⛰️"],["Ү","үхэр","🐄"],["Ф","футбол","⚽"],["Х","хонь","🐑"],
+  ["Ц","цэцэг","🌸"],["Ч","чих","👂"],["Ш","шувуу","🐦"],["Щ","",""],["Ъ","",""],
+  ["Ы","",""],["Ь","",""],["Э","эрдэнэ","💎"],["Ю","юм",""],["Я","ямаа","🐐"]
+];
+var VOWELS = "АЕЁИОӨУҮЫЭЮЯ";
+var EASY = ["А","Б","М","Н","О","С","Т","У","Х","Э","Я","Р"];
+var NOTE = { "Й": "Үгийн эхэнд ховор тохиолддог. Жишээ нь: «найз», «хайр».", "Щ": "Гадаад үгэнд тохиолдоно.", "Ъ": "Хатуулгын тэмдэг. Үг эхлэхгүй.", "Ы": "Үгийн дунд, сүүлд тохиолдоно. Жишээ нь: «ам ы»? Биш, «гэры», «бары» шиг.", "Ь": "Зөөлрүүлэх тэмдэг. Үг эхлэхгүй." };
+NOTE["Ы"] = "Үгийн дунд, сүүлд тохиолдоно. Жишээ нь: «хоолны», «хүүхдийн».";
+
+var byLetter = {}; DATA.forEach(function (d) { byLetter[d[0]] = d; });
+var el = document.getElementById("panel");
+var totalEl = document.getElementById("total");
+var mode = "learn", cur = "А", level = "easy", quiz = null, total = 0, started = false;
+
+try { total = parseInt(localStorage.getItem("ussgiin-stars") || "0", 10) || 0; } catch (e) {}
+var shownTotal = null;
+function saveTotal() {
+  if (shownTotal !== null && total !== shownTotal) { var sb = document.querySelector(".stars"); if (sb) { sb.classList.remove("bump"); void sb.offsetWidth; sb.classList.add("bump"); } }
+  shownTotal = total; totalEl.textContent = total; try { localStorage.setItem("ussgiin-stars", String(total)); } catch (e) {} }
+saveTotal();
+
+var hasVoice = false;
+function checkVoices() { try { hasVoice = speechSynthesis.getVoices().some(function (v) { return /^mn/i.test(v.lang); }); } catch (e) { hasVoice = false; } if (mode === "learn") render(); }
+try { speechSynthesis.addEventListener("voiceschanged", checkVoices); hasVoice = speechSynthesis.getVoices().some(function (v) { return /^mn/i.test(v.lang); }); } catch (e) {}
+function say(t) { try { var u = new SpeechSynthesisUtterance(t); u.lang = "mn-MN"; u.rate = 0.8; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) {} }
+
+// Дууны бичлэг: түлхүүр нь "L:А" (үсгийн нэр) эсвэл "W:А" (үг). Утга нь data: URI.
+// Жишээ: CLIPS["W:А"] = "data:audio/mp4;base64,...";
+var CLIPS = {};
+function play(key, text) {
+  if (CLIPS[key]) { try { new Audio(CLIPS[key]).play(); return; } catch (e) {} }
+  say(text);
+}
+function loadMiss() { try { return JSON.parse(localStorage.getItem("ussgiin-miss") || "{}") || {}; } catch (e) { return {}; } }
+function saveMiss(m) { try { localStorage.setItem("ussgiin-miss", JSON.stringify(m)); } catch (e) {} }
+function bumpMiss(l, d) { var m = loadMiss(); m[l] = Math.max(0, (m[l] || 0) + d); saveMiss(m); }
+function isV(l) { return VOWELS.indexOf(l) >= 0; }
+function cls(l) { return isV(l) ? "v" : "c"; }
+function shuffle(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+function pool() { var all = DATA.map(function (d) { return d[0]; }); return level === "easy" ? EASY : all; }
+function picPool() { var base = DATA.filter(function (d) { return d[2]; }).map(function (d) { return d[0]; }); return level === "easy" ? base.filter(function (l) { return EASY.indexOf(l) >= 0; }) : base; }
+
+function learnView() {
+  var d = byLetter[cur], l = d[0], word = d[1];
+  var wordHtml = word ? '<p class="word"><mark>' + word.charAt(0) + '</mark>' + word.slice(1) + '</p>' : '<p class="word">' + l + '</p>';
+  var info = word ? "" : '<p class="kind">' + (NOTE[l] || "") + '</p>';
+  var pic = d[2] ? '<div class="pic" aria-hidden="true">' + d[2] + '</div>' : "";
+  var speak = (hasVoice || CLIPS["W:" + l] || CLIPS["L:" + l]) ? '<button class="btn alt" data-say="1">Сонсох</button>' : "";
+  var tiles = DATA.map(function (x) {
+    return '<button class="tile ' + cls(x[0]) + '" data-letter="' + x[0] + '" aria-pressed="' + (x[0] === cur) + '" aria-label="' + x[0] + ' үсэг">' + x[0] + '</button>';
+  }).join("");
+  return '<div class="card detail"><div class="big ' + cls(l) + '" aria-hidden="true">' + l + l.toLowerCase() + '</div><div>' +
+    '<p class="kind">' + (isV(l) ? "Эгшиг үсэг" : (l === "Ъ" || l === "Ь" ? "Тэмдэг" : "Гийгүүлэгч үсэг")) + '</p>' + wordHtml + pic + info +
+    '<div class="nav"><button class="btn alt" data-step="-1">Өмнөх</button><button class="btn" data-step="1">Дараах</button>' + speak + '</div></div></div>' +
+    '<div class="legend"><span class="lv">Эгшиг</span><span class="lc">Гийгүүлэгч</span></div>' +
+    '<div class="grid" role="group" aria-label="Монгол цагаан толгой, 35 үсэг">' + tiles + '</div>';
+}
+
+function levelBar() {
+  return '<div class="level">Үсгийн тоо: <button class="btn alt" data-level="easy" aria-pressed="' + (level === "easy") + '">Амар (12)</button>' +
+    '<button class="btn alt" data-level="all" aria-pressed="' + (level === "all") + '">Бүгд (35)</button></div>';
+}
+
+function newQuiz(kind) {
+  if (kind === "fill") {
+    var words = BWORDS.filter(function (x) { return level === "easy" ? x.w.length <= 4 : true; });
+    var letters = DATA.map(function (d) { return d[0]; });
+    var fq = shuffle(words).slice(0, 10).map(function (x) {
+      var pos = Math.floor(Math.random() * x.w.length), t = x.w.charAt(pos);
+      var others = shuffle(letters.filter(function (l) { return l !== t; })).slice(0, 3);
+      return { t: t, word: x.w, pos: pos, pic: x.pic, opts: shuffle([t].concat(others)) };
+    });
+    quiz = { kind: kind, qs: fq, i: 0, first: 0, wrong: false, locked: false, done: false, review: [] };
+    return;
+  }
+  var src = kind === "first" ? picPool() : pool();
+  var miss = loadMiss();
+  // Өмнө алдсан үсгээс 3 хүртэлийг энэ тоглолтод заавал оруулна.
+  var review = Object.keys(miss).filter(function (l) { return src.indexOf(l) >= 0 && miss[l] > 0; })
+    .sort(function (a, b) { return miss[b] - miss[a]; }).slice(0, 3);
+  var rest = shuffle(src.filter(function (l) { return review.indexOf(l) < 0; }));
+  var targets = shuffle(review.concat(rest).slice(0, 10));
+  var all = DATA.map(function (d) { return d[0]; });
+  var n = kind === "jump" ? 5 : 3;
+  var qs = targets.map(function (t) {
+    var others = shuffle(all.filter(function (x) { return x !== t; })).slice(0, n);
+    return { t: t, opts: shuffle([t].concat(others)) };
+  });
+  quiz = { kind: kind, qs: qs, i: 0, first: 0, wrong: false, locked: false, done: false, review: review };
+}
+
+function quizView() {
+  var dots = "", track = "";
+  for (var k = 0; k < quiz.qs.length; k++) {
+    var c = k < quiz.i ? "done" : k === quiz.i ? "now" : "";
+    dots += '<i class="' + c + '"></i>';
+    track += '<i class="' + c + '">' + (k === quiz.i && !quiz.done ? "🐸" : "") + '</i>';
+  }
+  if (quiz.done) {
+    var s = quiz.first >= 9 ? 3 : quiz.first >= 6 ? 2 : 1, st = "";
+    for (var n = 0; n < 3; n++) st += n < s ? "★" : '<span class="off">★</span>';
+    return '<div class="card result"><div class="row" aria-label="' + s + ' од">' + st + '</div><h2>' + (s === 3 ? "Гайхалтай!" : s === 2 ? "Сайн байна!" : "Сайн оролдлоо!") + '</h2>' +
+      '<p>Эхний оролдлогоор зөв: ' + quiz.first + ' / ' + quiz.qs.length + '</p><div class="nav"><button class="btn" data-again="1">Дахин тоглох</button></div></div>';
+  }
+  var q = quiz.qs[quiz.i], d = byLetter[q.t], prompt, opts;
+  if (quiz.kind === "fill") {
+    prompt = '<p class="ask">Дутуу үсгийг нөхөж үгийг гүйцээ</p><div class="pic" aria-hidden="true">' + q.pic + '</div><div class="fillword" aria-label="Үг, нэг үсэг дутуу">' +
+      q.word.split("").map(function (ch, i) { return i === q.pos ? '<span class="gap" id="gap">?</span>' : '<span>' + ch + '</span>'; }).join("") + '</div>';
+    opts = q.opts.map(function (o) { return '<button class="opt ' + cls(o) + '" data-pick="' + o + '" aria-label="' + o + ' үсэг">' + o + '</button>'; });
+  } else if (quiz.kind === "jump") {
+    prompt = '<p class="ask">Мэлхийг энэ үсэг дээр үсрүүл</p><div class="target" aria-label="' + q.t + ' үсэг">' + q.t + '</div>';
+    opts = q.opts.map(function (o) { return '<button class="opt pad" data-pick="' + o + '" aria-label="' + o + ' үсэг">' + o + '</button>'; });
+  } else if (quiz.kind === "case") {
+    prompt ='<p class="ask">Том үсэгтэй адилхан жижиг үсгийг ол</p><div class="target" aria-label="' + q.t + ' үсэг">' + q.t + '</div>';
+    opts = q.opts.map(function (o) { return '<button class="opt ' + cls(o) + '" data-pick="' + o + '" aria-label="' + o.toLowerCase() + '">' + o.toLowerCase() + '</button>'; });
+  } else {
+    var w = d[1];
+    prompt = '<p class="ask">Энэ үг ямар үсгээр эхэлдэг вэ?</p><div class="pic" aria-hidden="true">' + d[2] + '</div>' +
+      '<div class="blank"><u>' + w.charAt(0) + '</u>' + w.slice(1) + '</div>';
+    opts = q.opts.map(function (o) { return '<button class="opt ' + cls(o) + '" data-pick="' + o + '" aria-label="' + o + ' үсэг">' + o + '</button>'; });
+  }
+  var review = quiz.review.length ? '<div class="review">Давтах үсэг: <b>' + quiz.review.join(", ") + '</b></div>' : "";
+  var label = 'aria-label="Асуулт ' + (quiz.i + 1) + ' / ' + quiz.qs.length + '"';
+  var bar = quiz.kind === "jump" ? '<div class="track" ' + label + '>' + track + '</div>' : '<div class="dots" ' + label + '>' + dots + '</div>';
+  return (quiz.kind === "fill" ? buildLevelBar() : levelBar()) + review + bar + '<div class="card prompt">' + prompt + '</div><div class="opts' + (quiz.kind === "jump" ? " pads" : "") + '">' + opts.join("") + '</div>';
+}
+
+function startMode(m) {
+  stopPop();
+  if (m === "subj") newSubj();
+  else if (m === "build") newBuild();
+  else if (m === "pairs") newPairs();
+  else if (m === "pop") newPop();
+  else if (m !== "learn") newQuiz(m);
+}
+function resultHtml(stars, line) {
+  var st = "";
+  for (var n = 0; n < 3; n++) st += n < stars ? "★" : '<span class="off">★</span>';
+  return '<div class="card result"><div class="row" aria-label="' + stars + ' од">' + st + '</div><h2>' + (stars === 3 ? "Гайхалтай!" : stars === 2 ? "Сайн байна!" : "Сайн оролдлоо!") + '</h2>' +
+    '<p>' + line + '</p><div class="nav"><button class="btn" data-again="1">Дахин тоглох</button></div></div>';
+}
+
+// Хос олох: том ба жижиг үсгийн картыг тааруулна
+var pr = null;
+function newPairs() {
+  var picks = shuffle(pool()).slice(0, 6), cards = [];
+  picks.forEach(function (l, k) { cards.push({ pair: k, txt: l, ch: l }); cards.push({ pair: k, txt: l.toLowerCase(), ch: l }); });
+  pr = { cards: shuffle(cards), n: picks.length, open: [], matched: {}, moves: 0, locked: false, done: false };
+}
+function pairsView() {
+  if (pr.done) return resultHtml(pr.moves <= 8 ? 3 : pr.moves <= 11 ? 2 : 1, "Ходлого: " + pr.moves + " (хамгийн цөөн нь " + pr.n + ")");
+  var cards = pr.cards.map(function (c, i) {
+    var up = pr.open.indexOf(i) >= 0 || pr.matched[c.pair];
+    return up ? '<button class="pc up ' + cls(c.ch) + (pr.matched[c.pair] ? " got" : "") + '" data-card="' + i + '" aria-label="' + c.txt + '">' + c.txt + '</button>'
+      : '<button class="pc" data-card="' + i + '" aria-label="Хаалттай карт">?</button>';
+  }).join("");
+  var left = pr.n - Object.keys(pr.matched).length;
+  return levelBar() + '<div class="review">Ходлого: <b>' + pr.moves + '</b> · Үлдсэн хос: <b>' + left + '</b></div>' +
+    '<div class="card prompt"><p class="ask">Том үсэг ба түүний жижиг үсгийг олж хос болго</p></div><div class="pairs">' + cards + '</div>';
+}
+function pairsClick(b) {
+  var i = parseInt(b.dataset.card, 10), me = pr, c = pr.cards[i];
+  if (pr.locked || pr.open.indexOf(i) >= 0 || pr.matched[c.pair]) return;
+  pr.open.push(i);
+  if (pr.open.length < 2) { render(); return; }
+  pr.moves++;
+  var a = pr.cards[pr.open[0]], d = pr.cards[pr.open[1]];
+  if (a.pair === d.pair) {
+    burst(b, 12); pr.matched[a.pair] = true; pr.open = []; total++; saveTotal(); bumpMiss(a.ch, -1);
+    if (Object.keys(pr.matched).length >= pr.n) pr.done = true;
+    render();
+  } else {
+    pr.locked = true; render();
+    setTimeout(function () { if (pr !== me) return; pr.open = []; pr.locked = false; render(); }, 900);
+  }
+}
+
+// Бөмбөлөг хагалах: дээш хөвөх бөмбөлгөөс хэлсэн үсгийг дарна
+var pp = null, REDUCED = false;
+try { REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches; } catch (e) {}
+function stopPop() { if (pp && pp.raf) { cancelAnimationFrame(pp.raf); pp.raf = 0; } }
+function randLetter() { var p = pool(); return p[Math.floor(Math.random() * p.length)]; }
+function newPop() { stopPop(); pp = { bs: [], target: randLetter(), popped: 0, goal: 10, mistakes: 0, done: false, raf: 0, last: 0, field: null, w: 0, h: 0 }; }
+function bubbleLetter() {
+  if (Math.random() < 0.35) return pp.target;
+  var p = pool().filter(function (l) { return l !== pp.target; });
+  return p[Math.floor(Math.random() * p.length)];
+}
+function setLetter(b, ch) { b.ch = ch; b.el.textContent = ch; b.el.className = "bub " + cls(ch); b.el.setAttribute("aria-label", ch + " үсэг"); }
+function moveBubble(b) { b.el.style.transform = "translate(" + b.x + "px," + b.y + "px)"; }
+function placeBubble(b, fresh) {
+  var col = Math.floor(Math.random() * 4), span = Math.max(1, pp.w - 72) / 3;
+  b.x = Math.max(0, Math.min(pp.w - 68, col * span + (Math.random() - 0.5) * 20));
+  b.y = fresh ? pp.h + Math.random() * 60 : Math.random() * (pp.h - 72);
+  b.v = (REDUCED ? 12 : 28) + Math.random() * (REDUCED ? 10 : 30);
+  setLetter(b, bubbleLetter()); moveBubble(b);
+}
+function popView() {
+  if (pp.done) return resultHtml(pp.mistakes <= 2 ? 3 : pp.mistakes <= 5 ? 2 : 1, "Алдсан дарилт: " + pp.mistakes);
+  return levelBar() + '<div class="card pophead"><div>Дар: <b id="ptarget" class="ptarget">' + pp.target + '</b></div><div id="pcount" class="pcount">0 / ' + pp.goal + '</div></div>' +
+    '<div class="field" id="field" aria-label="Бөмбөлгийн талбай"></div>';
+}
+function popStart() {
+  var f = document.getElementById("field"); if (!f) return;
+  pp.field = f; pp.w = f.clientWidth; pp.h = f.clientHeight; pp.bs = []; pp.last = 0;
+  for (var i = 0; i < 8; i++) {
+    var el = document.createElement("button"); el.dataset.bubble = String(i); f.appendChild(el);
+    var b = { el: el }; pp.bs.push(b); placeBubble(b, false);
+  }
+  setLetter(pp.bs[0], pp.target); setLetter(pp.bs[1], pp.target);
+  pp.raf = requestAnimationFrame(popTick);
+}
+function popTick(t) {
+  if (!(started && mode === "pop" && pp && !pp.done && pp.field && document.body.contains(pp.field))) { if (pp) pp.raf = 0; return; }
+  var dt = pp.last ? Math.min(0.05, (t - pp.last) / 1000) : 0; pp.last = t;
+  pp.bs.forEach(function (b) { b.y -= b.v * dt; if (b.y < -80) placeBubble(b, true); else moveBubble(b); });
+  pp.raf = requestAnimationFrame(popTick);
+}
+function popClick(b) {
+  var bb = pp.bs[parseInt(b.dataset.bubble, 10)]; if (!bb) return;
+  if (bb.ch === pp.target) {
+    burst(b, 10); pp.popped++; total++; saveTotal(); bumpMiss(pp.target, -1);
+    document.getElementById("pcount").textContent = pp.popped + " / " + pp.goal;
+    placeBubble(bb, true);
+    if (pp.popped >= pp.goal) { pp.done = true; stopPop(); render(); return; }
+    if (pp.popped % 3 === 0) {
+      pp.target = randLetter(); document.getElementById("ptarget").textContent = pp.target;
+      setLetter(pp.bs[Math.floor(Math.random() * pp.bs.length)], pp.target);
+    }
+  } else {
+    pp.mistakes++; bumpMiss(pp.target, 1); bb.el.classList.add("wrong");
+    setTimeout(function () { bb.el.classList.remove("wrong"); }, 400);
+  }
+}
+
+// Үг бүтээх горим: блок дарж үгийг өрнө
+var BWORDS = DATA.filter(function (d) { return d[1] && d[2]; }).map(function (d) { return { w: d[1].toUpperCase(), pic: d[2] }; });
+var wb = null;
+function newBuild() {
+  var list = BWORDS.filter(function (x) { return level === "easy" ? x.w.length <= 4 : true; });
+  wb = { ws: shuffle(list).slice(0, 6), i: 0, first: 0, wrong: false, locked: false, done: false, ok: false, shake: false };
+  setWord();
+}
+function setWord() {
+  var letters = wb.ws[wb.i].w.split(""), bank, tries = 0;
+  do { bank = shuffle(letters.map(function (ch, k) { return { id: k, ch: ch }; })); tries++; }
+  while (tries < 6 && letters.length > 1 && bank.map(function (x) { return x.ch; }).join("") === letters.join(""));
+  wb.letters = letters; wb.bank = bank;
+  wb.slots = letters.map(function () { return null; });
+  wb.wrong = false; wb.locked = false; wb.ok = false; wb.shake = false;
+}
+function buildLevelBar() {
+  return '<div class="level">Үгийн урт: <button class="btn alt" data-level="easy" aria-pressed="' + (level === "easy") + '">Богино</button>' +
+    '<button class="btn alt" data-level="all" aria-pressed="' + (level === "all") + '">Бүгд</button></div>';
+}
+function buildView() {
+  if (wb.done) {
+    var s = wb.first >= 5 ? 3 : wb.first >= 3 ? 2 : 1, st = "";
+    for (var n = 0; n < 3; n++) st += n < s ? "★" : '<span class="off">★</span>';
+    return '<div class="card result"><div class="row" aria-label="' + s + ' од">' + st + '</div><h2>' + (s === 3 ? "Гайхалтай!" : s === 2 ? "Сайн байна!" : "Сайн оролдлоо!") + '</h2>' +
+      '<p>Эхний оролдлогоор зөв: ' + wb.first + ' / ' + wb.ws.length + '</p><div class="nav"><button class="btn" data-again="1">Дахин тоглох</button></div></div>';
+  }
+  var cur = wb.ws[wb.i], dots = "";
+  for (var k = 0; k < wb.ws.length; k++) dots += '<i class="' + (k < wb.i ? "done" : k === wb.i ? "now" : "") + '"></i>';
+  var slots = wb.slots.map(function (id, idx) {
+    if (id === null) return '<span class="slot"></span>';
+    var ch = wb.letters[id];
+    return '<button class="blk ' + cls(ch) + '" data-slot="' + idx + '" aria-label="' + ch + ', буцаах">' + ch + '</button>';
+  }).join("");
+  var placed = {}; wb.slots.forEach(function (id) { if (id !== null) placed[id] = true; });
+  var bank = wb.bank.filter(function (x) { return !placed[x.id]; }).map(function (x) {
+    return '<button class="blk ' + cls(x.ch) + '" data-bank="' + x.id + '" aria-label="' + x.ch + '">' + x.ch + '</button>';
+  }).join("");
+  return buildLevelBar() + '<div class="dots" aria-label="Үг ' + (wb.i + 1) + ' / ' + wb.ws.length + '">' + dots + '</div>' +
+    '<div class="card prompt"><p class="ask">Үсгийн блокуудыг дарж үгийг бүтээ</p><div class="pic" aria-hidden="true">' + cur.pic + '</div>' +
+    '<div class="slots' + (wb.ok ? " ok" : "") + (wb.shake ? " shake" : "") + '" aria-label="Үгийн нүднүүд">' + slots + '</div></div>' +
+    '<div class="card bankcard"><div class="bank" aria-label="Үсгийн блокууд">' + (bank || '<span class="kind">Бүх блок байрлалаа</span>') + '</div></div>';
+}
+function buildClick(b) {
+  if (wb.locked) return;
+  if (b.dataset.bank !== undefined) {
+    var p = wb.slots.indexOf(null); if (p < 0) return;
+    wb.slots[p] = parseInt(b.dataset.bank, 10);
+  } else { wb.slots[parseInt(b.dataset.slot, 10)] = null; }
+  if (wb.slots.indexOf(null) >= 0) { render(); return; }
+  var made = wb.slots.map(function (id) { return wb.letters[id]; }).join("");
+  if (made === wb.ws[wb.i].w) {
+    wb.ok = true; wb.locked = true; burst(b, 16);
+    if (!wb.wrong) { wb.first++; total++; saveTotal(); }
+    render();
+    setTimeout(function () {
+      wb.i++;
+      if (wb.i >= wb.ws.length) { wb.done = true; wb.locked = false; wb.ok = false; } else setWord();
+      render();
+    }, 1000);
+  } else {
+    wb.wrong = true; wb.shake = true; wb.locked = true; render();
+    setTimeout(function () {
+      wb.slots = wb.slots.map(function () { return null; }); wb.shake = false; wb.locked = false; render();
+    }, 700);
+  }
+}
+
+// ===== Хичээлүүд: 1-12 анги =====
+var SUBJ = { mn: "Монгол хэл", math: "Математик", en: "Англи хэл", bi: "Монгол бичиг" };
+var grade = 1, subjKey = "math", sq = null;
+try { var g0 = parseInt(localStorage.getItem("ussgiin-grade") || "1", 10); if (g0 >= 1 && g0 <= 12) grade = g0; } catch (e) {}
+function saveGrade() { try { localStorage.setItem("ussgiin-grade", String(grade)); } catch (e) {} }
+function ri(a, b) { return a + Math.floor(Math.random() * (b - a + 1)); }
+function pk(a) { return a[Math.floor(Math.random() * a.length)]; }
+function uniq(a) { var s = {}, o = []; a.forEach(function (x) { if (!s[x]) { s[x] = 1; o.push(x); } }); return o; }
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+function qHtml(q) {
+  return esc(q).replace(/\{mb:([^}]+)\}/g, function (m, s) { return '<span class="mbwrap"><span class="mb" lang="mn-Mong">' + s + '</span></span>'; });
+}
+function numOpts(c, step, fmt) {
+  fmt = fmt || String;
+  var cand = [c + 1, c - 1, c + 2, c - 2, c + step, c - step, c + 10, c - 10, c * 2, c + 3, c - 3, c + 5, c - 5, c + 4, c + 7], seen = {}, out = [];
+  seen[fmt(c)] = 1;
+  shuffle(cand).forEach(function (x) {
+    if (out.length >= 3) return;
+    var s = fmt(x);
+    if (!seen[s] && (c < 0 || x >= 0)) { seen[s] = 1; out.push(s); }
+  });
+  return out;
+}
+function mk(q, c, step, fmt) { fmt = fmt || String; return [q, fmt(c), numOpts(c, step || 1, fmt)]; }
+function strItem(q, c, cands) {
+  var w = uniq(shuffle(cands).filter(function (x) { return x !== c; })).slice(0, 3), k = 1;
+  while (w.length < 3) { var f = c + "′".repeat(k++); if (w.indexOf(f) < 0) w.push(f); }
+  return [q, c, w];
+}
+var SUP = { 2: "²", 3: "³", 4: "⁴" };
+var SUBS = { 2: "₂", 3: "₃", 5: "₅", 10: "₁₀" };
+function f1(v) { return (Math.round(v * 10) / 10).toFixed(1); }
+function nn(x) { return x < 0 ? "(" + x + ")" : String(x); }
+function choose(n, k) { var r = 1; for (var i = 1; i <= k; i++) r = r * (n - k + i) / i; return Math.round(r); }
+var TRIPLES = [[3, 4, 5], [5, 12, 13], [6, 8, 10], [8, 15, 17], [9, 12, 15], [7, 24, 25]];
+var TRIG = [["sin 30°", "1/2"], ["cos 60°", "1/2"], ["sin 90°", "1"], ["cos 0°", "1"], ["tg 45°", "1"], ["cos 90°", "0"], ["sin 0°", "0"], ["sin 45°", "√2/2"], ["cos 30°", "√3/2"]];
+var DERIV = [["(sin x)′", "cos x"], ["(cos x)′", "−sin x"], ["(eˣ)′", "eˣ"], ["(ln x)′", "1/x"]];
+
+// Математик: хариуг нь програм тооцоолно, тиймээс үргэлж зөв
+var MATH = {
+  1: [
+    function () { var a = ri(1, 9), b = ri(1, 20 - a); return mk(a + " + " + b + " = ?", a + b); },
+    function () { var a = ri(6, 20), b = ri(1, a - 1); return mk(a + " − " + b + " = ?", a - b); },
+    function () { var s = ri(8, 20), a = ri(1, s - 1); return mk(a + " + ? = " + s, s - a); }
+  ],
+  2: [
+    function () { var a = ri(10, 60), b = ri(10, 99 - a); return mk(a + " + " + b + " = ?", a + b, 10); },
+    function () { var a = ri(30, 99), b = ri(10, a - 5); return mk(a + " − " + b + " = ?", a - b, 10); },
+    function () { var a = pk([2, 3, 4, 5, 10]), b = ri(1, 10); return mk(a + " × " + b + " = ?", a * b, a); }
+  ],
+  3: [
+    function () { var a = ri(2, 9), b = ri(2, 9); return mk(a + " × " + b + " = ?", a * b, a); },
+    function () { var b = ri(2, 9), c = ri(2, 9); return mk(b * c + " ÷ " + b + " = ?", c, 1); },
+    function () { var a = ri(4, 15), b = ri(2, a - 1); return mk("Тэгш өнцөгтийн урт " + a + " см, өргөн " + b + " см. Периметр хэдэн см вэ?", 2 * (a + b), 2); },
+    function () { var a = ri(2, 9), b = ri(2, 9), c = ri(1, 9); return mk(a + " × " + b + " + " + c + " = ?", a * b + c, a); }
+  ],
+  4: [
+    function () { var a = ri(100, 899), b = ri(100, 999 - a); return mk(a + " + " + b + " = ?", a + b, 100); },
+    function () { var a = ri(300, 999), b = ri(100, a - 50); return mk(a + " − " + b + " = ?", a - b, 100); },
+    function () { var a = ri(11, 49), b = ri(2, 9); return mk(a + " × " + b + " = ?", a * b, 10); },
+    function () { var b = ri(2, 9), c = ri(11, 99); return mk(b * c + " ÷ " + b + " = ?", c, 10); },
+    function () { var a = ri(5, 40), b = ri(3, 20); return mk("Тэгш өнцөгтийн урт " + a + " м, өргөн " + b + " м. Талбай хэдэн м² вэ?", a * b, 10); }
+  ],
+  5: [
+    function () { var d = ri(5, 12), a = ri(1, d - 3), b = ri(1, d - a - 1), s = a + b; return strItem(a + "/" + d + " + " + b + "/" + d + " = ?", s + "/" + d, [s + "/" + (2 * d), (s + 1) + "/" + d, (s - 1) + "/" + d, a + "/" + d, (s + 2) + "/" + d]); },
+    function () { var x = ri(11, 59) / 10, y = ri(11, 59) / 10; return mk(f1(x) + " + " + f1(y) + " = ?", Math.round((x + y) * 10) / 10, 0.1, f1); },
+    function () { var d = pk([2, 3, 4, 5]), n = d * ri(2, 10); return mk(n + "-ийн 1/" + d + " хэд вэ?", n / d, 1); }
+  ],
+  6: [
+    function () { var base = pk([20, 40, 60, 80, 100, 200]), p = pk([10, 20, 25, 50]); return mk(base + "-ын " + p + "% нь хэд вэ?", base * p / 100, 2); },
+    function () { var a = ri(-9, 9), b = ri(-9, 9), op = pk(["+", "−"]); return mk(nn(a) + " " + op + " " + nn(b) + " = ?", op === "+" ? a + b : a - b, 1); },
+    function () {
+      var P = [[1, 2], [2, 3], [3, 4], [3, 5], [2, 5], [4, 5], [1, 3], [1, 4]], p = pk(P), g = ri(2, 6), all = P.map(function (x) { return x[0] + ":" + x[1]; });
+      return strItem(g * p[0] + " : " + g * p[1] + " харьцааг хураавал?", p[0] + ":" + p[1], all);
+    },
+    function () { var x = pk([0.5, 1.5, 2.5, 3.5, 4.2]); return mk(x + " км = ? м", Math.round(x * 1000), 100); }
+  ],
+  7: [
+    function () { var x = ri(2, 20), a = ri(2, 15); return mk("x + " + a + " = " + (x + a) + ". x = ?", x, 1); },
+    function () { var k = ri(2, 9), x = ri(2, 12); return mk(k + "x = " + (k * x) + ". x = ?", x, 1); },
+    function () { var k = ri(2, 6), b = ri(1, 9), x = ri(2, 10); return mk(k + "x − " + b + " = " + (k * x - b) + ". x = ?", x, 1); },
+    function () { var a = ri(2, 9), b = ri(2, 9), c = ri(2, 9); return mk(a + " + " + b + " × " + c + " = ?", a + b * c, b); },
+    function () { var a = ri(2, 9), b = ri(2, 9); return mk("(−" + a + ") × " + b + " = ?", -a * b, a); }
+  ],
+  8: [
+    function () { var n = pk([4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144]); return mk("√" + n + " = ?", Math.sqrt(n), 1); },
+    function () { var b = ri(2, 5), e = ri(2, 4); return mk(b + SUP[e] + " = ?", Math.pow(b, e), b); },
+    function () { var k = ri(2, 5), x = ri(-5, 12), b = ri(1, 9); return mk(k + "x + " + b + " = " + (k * x + b) + ". x = ?", x, 1); },
+    function () { var a = ri(3, 6), b = ri(1, a - 1), x = ri(1, 10), c1 = ri(1, 9), c2 = c1 + (a - b) * x; return mk(a + "x + " + c1 + " = " + b + "x + " + c2 + ". x = ?", x, 1); }
+  ],
+  9: [
+    function () { var r = ri(2, 12); return strItem("x² = " + r * r + ". x = ?", "±" + r, ["" + r, "±" + (r + 1), "±" + (r * 2)]); },
+    function () {
+      var p = ri(1, 8), q = ri(p + 1, 9), c = p + " ба " + q;
+      return strItem("x² − " + (p + q) + "x + " + (p * q) + " = 0 тэгшитгэлийн язгуурууд?", c, ["−" + p + " ба −" + q, p + " ба " + (q + 1), (p + 1) + " ба " + (q + 1)]);
+    },
+    function () { var t = pk(TRIPLES); return mk("Тэгш өнцөгт гурвалжны катетууд " + t[0] + " ба " + t[1] + " см. Гипотенуз хэдэн см вэ?", t[2], 1); },
+    function () { var a = ri(2, 5), b = ri(-5, 8), n = ri(1, 8); return mk("y = " + a + "x " + (b < 0 ? "− " + (-b) : "+ " + b) + " бол x = " + n + " үед y = ?", a * n + b, a); }
+  ],
+  10: [
+    function () { var b = pk([2, 3, 5, 10]), e = ri(2, 4); return mk("log" + SUBS[b] + " " + Math.pow(b, e) + " = ?", e, 1); },
+    function () { var a = ri(1, 9), d = ri(2, 6), n = ri(6, 12); return mk("Арифметик прогрессийн эхний гишүүн " + a + ", ялгавар " + d + ". " + n + "-р гишүүн хэд вэ?", a + (n - 1) * d, d); },
+    function () { var b = pk([2, 3, 5]), x = ri(2, 5); return mk(b + "ˣ = " + Math.pow(b, x) + ". x = ?", x, 1); },
+    function () { var t = pk(TRIG); return strItem(t[0] + " = ?", t[1], ["0", "1/2", "1", "√2/2", "√3/2"]); }
+  ],
+  11: [
+    function () { var n = ri(2, 4), a = ri(1, 4); return mk("f(x) = x" + SUP[n] + ". f′(" + a + ") = ?", n * Math.pow(a, n - 1), n); },
+    function () { var p = ri(1, 4), q = ri(-5, 6), r = ri(1, 9), a = ri(1, 5); return mk("f(x) = " + p + "x² " + (q < 0 ? "− " + (-q) : "+ " + q) + "x + " + r + ". f′(" + a + ") = ?", 2 * p * a + q, 2); },
+    function () { var n = ri(4, 8), k = ri(2, 3); return mk("C(" + n + ", " + k + ") = ?", choose(n, k), n); },
+    function () { var b = ri(1, 4), q = pk([2, 3]), n = ri(4, 6); return mk("Геометр прогрессийн эхний гишүүн " + b + ", хуваагч " + q + ". " + n + "-р гишүүн хэд вэ?", b * Math.pow(q, n - 1), q); }
+  ],
+  12: [
+    function () { var a = ri(2, 9); return mk("0-ээс " + a + " хүртэлх ∫ 2x dx = ?", a * a, a); },
+    function () { var a = pk([3, 6]); return mk("0-ээс " + a + " хүртэлх ∫ x² dx = ?", a * a * a / 3, a); },
+    function () { var a = ri(1, 9); return mk("lim (x→" + a + ") (x² − " + a * a + ")/(x − " + a + ") = ?", 2 * a, 2); },
+    function () { var d = pk(DERIV); return strItem(d[0] + " = ?", d[1], ["cos x", "−sin x", "eˣ", "1/x", "sin x", "−cos x"]); },
+    function () {
+      var r = ri(2, 6), b = ri(2, 6); while (b === r) b = ri(2, 6);
+      return strItem("Хайрцагт " + r + " улаан, " + b + " цэнхэр бөмбөг байна. Нэгийг нь санамсаргүй авахад улаан байх магадлал?", r + "/" + (r + b), [b + "/" + (r + b), r + "/" + b, (r + 1) + "/" + (r + b), r + "/" + (r + b + 1)]);
+    }
+  ]
+};
+
+// Монгол хэл, Англи хэл: [асуулт, зөв хариу, буруу, буруу, буруу]
+var BANK = { mn: {}, en: {}, bi: {} };
+BANK.mn[1] = [
+  ["Аль үсэг эгшиг вэ?", "А", "Б", "М", "Н"],
+  ["«Алим» гэдэг үг хэдэн үетэй вэ?", "2", "1", "3", "4"],
+  ["«Нохой» гэдэг үгийн эхний үсэг аль нь вэ?", "Н", "О", "Х", "Й"],
+  ["Өгүүлбэрийн төгсгөлд тавигддаг тэмдэг аль нь вэ?", "Цэг", "Таслал", "Хаалт", "Зураас"],
+  ["Аль үг «м» үсгээр эхэлдэг вэ?", "муур", "нохой", "гахай", "тахиа"],
+  ["«Од» гэдэг үгийн сүүлийн үсэг аль нь вэ?", "д", "о", "а", "т"],
+  ["Аль нь том үсэг вэ?", "Б", "б", "в", "г"],
+  ["Аль нь эгшиг үсэг вэ?", "Ө", "Т", "Р", "С"]
+];
+BANK.mn[2] = [
+  ["«Том» үгийн эсрэг утгатай үг?", "жижиг", "урт", "өндөр", "хүнд"],
+  ["«Өдөр» үгийн эсрэг утгатай үг?", "шөнө", "өглөө", "орой", "үдэш"],
+  ["«Ээж» гэдэг үгэнд хэдэн үсэг байна вэ?", "3", "2", "4", "5"],
+  ["Аль үг «а» үсгээр төгсдөг вэ?", "ямаа", "нохой", "морь", "хонь"],
+  ["Аль нь өгүүлбэр вэ?", "Би сургуульд явна.", "Сургууль", "Миний ном", "Том байшин"],
+  ["«Хоёр» гэдэг тоог ямар цифрээр бичих вэ?", "2", "1", "3", "12"],
+  ["Аль үгийг үе болгон зөв хуваасан бэ?", "а-лим", "ал-им", "али-м", "а-л-им"],
+  ["Асуух өгүүлбэрийн төгсгөлд ямар тэмдэг тавих вэ?", "?", "!", ".", ","]
+];
+BANK.mn[3] = [
+  ["«Юу вэ?», «Хэн бэ?» гэсэн асуултад хариулдаг үг аль нь вэ?", "Нэр үг", "Үйл үг", "Тэмдэг нэр", "Тоо нэр"],
+  ["«Юу хийв?» гэсэн асуултад хариулдаг үг?", "Үйл үг", "Нэр үг", "Тоо нэр", "Төлөөний үг"],
+  ["Аль үг үйл үг вэ?", "уншина", "ном", "сайхан", "гурав"],
+  ["Аль үг нэр үг вэ?", "сургууль", "гүйнэ", "улаан", "тав"],
+  ["«Сайхан» үг ямар үг вэ?", "Тэмдэг нэр", "Нэр үг", "Үйл үг", "Тоо нэр"],
+  ["Өгүүлбэр ямар үсгээр эхэлдэг вэ?", "Том үсгээр", "Жижиг үсгээр", "Тоогоор", "Таслалаар"],
+  ["«Халуун» үгийн эсрэг утгатай үг?", "хүйтэн", "дулаан", "шаварлаг", "цас"],
+  ["Аль үг «морь» үгтэй ойролцоо утгатай вэ?", "хүлэг", "хонь", "ямаа", "нохой"]
+];
+BANK.mn[4] = [
+  ["Эрэгтэй эгшиг аль нь вэ?", "а, о, у", "э, ө, ү", "и", "я, ю"],
+  ["Эмэгтэй эгшгүүд аль нь вэ?", "э, ө, ү", "а, о, у", "и, ы", "я, ю, ё"],
+  ["«Том» ба «жижиг» үгс ямар харьцаатай вэ?", "Эсрэг утгатай", "Ижил утгатай", "Холбоогүй", "Давхар утгатай"],
+  ["«Эрт» үгийн эсрэг утгатай үг?", "орой", "өглөө", "удахгүй", "өдөр"],
+  ["Аль өгүүлбэр зөв бичигдсэн бэ?", "Би ном уншсан.", "би ном уншсан", "Би ном уншсан,", "би Ном уншсан."],
+  ["Аль нь зүйр цэцэн үг вэ?", "Тулга гурав байж тогоо тогтдог", "Би хичээлээ хийв", "Өнөөдөр нар гарав", "Цас орж байна"],
+  ["Асуух өгүүлбэр аль нь вэ?", "Чи хаашаа явж байна вэ?", "Би гэртээ харилаа.", "Ямар сайхан өдөр вэ!", "Манай анги том."],
+  ["Аль үг тоо нэр вэ?", "долоо", "улаан", "сургууль", "уншина"]
+];
+BANK.mn[5] = [
+  ["«Би, чи, тэр» нь ямар үг вэ?", "Төлөөний үг", "Нэр үг", "Үйл үг", "Тэмдэг нэр"],
+  ["Тэмдэг нэр юуг заадаг вэ?", "Юмны шинж чанарыг", "Үйлийг", "Тоог", "Дууриаг"],
+  ["«Сайн» үгийн эсрэг утгатай үг?", "муу", "сайхан", "сайтар", "сайжрах"],
+  ["«Хүүхдүүд талбайд тоглоно.» өгүүлбэрийн үйл үгийг ол.", "тоглоно", "хүүхдүүд", "талбайд", "Хүүхдүүд талбайд"],
+  ["«Хавар, зун, намар, өвөл» нь юуг заасан үгс вэ?", "Жилийн дөрвөн улирал", "Өдрийн хэсэг", "Долоо хоногийн өдөр", "Сарын нэр"],
+  ["Аль нь төлөөний үг вэ?", "бид", "хүү", "уул", "сайн"],
+  ["Монгол хэлний цагаан толгойд хэдэн үсэг байдаг вэ?", "35", "33", "30", "36"],
+  ["«Ь» үсэг ямар үүрэгтэй вэ?", "Зөөлрүүлэх тэмдэг", "Хатууруулах тэмдэг", "Эгшиг", "Тоо"]
+];
+BANK.mn[6] = [
+  ["«Хэн?», «Юу?» гэсэн асуултад хариулдаг өгүүлбэрийн гол хэсэг?", "Өгүүлэгдэхүүн", "Өгүүлэхүүн", "Тодотгол", "Гүйцэтгэл"],
+  ["«Юу хийв?» гэсэн асуултад хариулдаг өгүүлбэрийн гол хэсэг?", "Өгүүлэхүүн", "Өгүүлэгдэхүүн", "Тодотгол", "Гүйцэтгэл"],
+  ["«Ямар?» гэсэн асуултад хариулж нэрийг тодорхойлдог хэсэг?", "Тодотгол", "Гүйцэтгэл", "Тохиолдол", "Өгүүлэхүүн"],
+  ["Дуудах өгүүлбэрийн төгсгөлд ямар тэмдэг тавих вэ?", "!", "?", ".", ";"],
+  ["«ө, ү» нь ямар эгшиг вэ?", "Эмэгтэй эгшиг", "Эрэгтэй эгшиг", "Саармаг эгшиг", "Гийгүүлэгч"],
+  ["Аль нь нийлмэл өгүүлбэр вэ?", "Бороо орж, бид гэртээ үлдэв.", "Бороо орж байна.", "Бид гэртээ үлдэв.", "Орой боллоо."],
+  ["Ижил утгатай хос аль нь вэ?", "их — том", "том — жижиг", "халуун — хүйтэн", "өдөр — шөнө"],
+  ["«Монголын нууц товчоо» гэж юу вэ?", "Монголчуудын эртний түүхэн бүтээл", "Орчин үеийн роман", "Сурах бичиг", "Зүйр цэцэн үгийн цуглуулга"]
+];
+BANK.mn[7] = [
+  ["Үгийн үндсэн утгыг агуулсан хэсгийг юу гэх вэ?", "Язгуур", "Нөхцөл", "Дагавар", "Угтвар"],
+  ["Үгийн сүүлд залгаж үгийн хэлбэрийг өөрчилдөг хэсэг?", "Нөхцөл", "Язгуур", "Угтвар", "Өгүүлэхүүн"],
+  ["«Багш-ууд» үгийн «-ууд» нь юу вэ?", "Олон тооны нөхцөл", "Язгуур", "Угтвар", "Төлөөний үг"],
+  ["Шүлэг ямар зохиолын төрөлд хамаарах вэ?", "Яруу найраг", "Эпос", "Жүжиг", "Тууж"],
+  ["Д.Нацагдоржийн «Миний нутаг» нь ямар төрлийн бүтээл вэ?", "Шүлэг", "Роман", "Жүжиг", "Эссэ"],
+  ["Уран зохиолын гурван үндсэн төрөл аль нь вэ?", "Яруу найраг, зохиол, жүжиг", "Тоо, үсэг, дуу", "Нэр, үйл, тоо", "Өгүүлбэр, үе, үг"],
+  ["Юмны шинжийг заадаг, «ямар?» гэсэн асуултад хариулдаг үг?", "Тэмдэг нэр", "Үйл үг", "Тоо нэр", "Нөхцөл"],
+  ["Хоёр үгийн утга ойролцоо бол тэдгээрийг юу гэх вэ?", "Ижил утгатай үг", "Эсрэг утгатай үг", "Олон утгатай үг", "Дууриах үг"]
+];
+BANK.mn[8] = [
+  ["Хэд хэдэн өгүүлбэрээс бүрдсэн зохиолын нэг хэсгийг юу гэх вэ?", "Догол мөр", "Үг", "Үе", "Тэмдэг"],
+  ["Өгүүлбэр доторх үгсийн хоорондын холбоог юу гэх вэ?", "Үгийн холбоо", "Үе", "Үсэг", "Тоо"],
+  ["Хоёр ба түүнээс дээш хэсгээс бүтсэн өгүүлбэрийг юу гэх вэ?", "Нийлмэл өгүүлбэр", "Энгийн өгүүлбэр", "Асуух өгүүлбэр", "Дуудах өгүүлбэр"],
+  ["Үйл үгийн «цаг» нь юуг заадаг вэ?", "Үйлийн болох хугацааг", "Үйлийн тоог", "Хүйсийг", "Өнгийг"],
+  ["«Би маргааш сургуульд явна» өгүүлбэрийн үйл үгийн цаг?", "Ирээдүй цаг", "Өнгөрсөн цаг", "Одоо цаг", "Үргэлжилсэн цаг"],
+  ["«Би өчигдөр ном уншсан» өгүүлбэрийн үйл үгийн цаг?", "Өнгөрсөн цаг", "Ирээдүй цаг", "Одоо цаг", "Үргэлжилсэн цаг"],
+  ["Мөнхийн үнэн санааг товч хэлбэрээр илэрхийлдэг ардын аман зохиолын жижиг төрөл?", "Зүйр цэцэн үг", "Тууль", "Жүжиг", "Өгүүллэг"],
+  ["«Монголын нууц товчоо» ямар зууны бүтээл вэ?", "XIII зуун", "V зуун", "XVII зуун", "XX зуун"]
+];
+BANK.mn[9] = [
+  ["Өгүүллэг ямар зохиолын төрөлд хамаарах вэ?", "Зохиол (проза)", "Яруу найраг", "Жүжиг", "Дуу"],
+  ["Зохиолын гол дүрийг юу гэж нэрлэдэг вэ?", "Гол дүр", "Гарчиг", "Төгсгөл", "Бадаг"],
+  ["Хүн бус зүйлийг хүн шиг дүрслэх уран сайхны арга?", "Хүнчлэл", "Зүйрлэл", "Хэтрүүлэг", "Эсрэгцэл"],
+  ["«Нар инээмсэглэв» гэдэг ямар арга вэ?", "Хүнчлэл", "Хэтрүүлэг", "Эсрэгцэл", "Дуурайх"],
+  ["«Миний нутаг» шүлгийг хэн бичсэн бэ?", "Д.Нацагдорж", "Ц.Дамдинсүрэн", "Б.Явуухулан", "Ч.Лодойдамба"],
+  ["«Гологдсон хүүхэн» зохиолыг хэн бичсэн бэ?", "Ц.Дамдинсүрэн", "Д.Нацагдорж", "Б.Явуухулан", "С.Дашдорж"],
+  ["Шүлгийн мөрүүдийн бүлгийг юу гэх вэ?", "Бадаг", "Догол мөр", "Бүлэг", "Үе"],
+  ["Өгүүллэг, тууж, роман нь ямар зохиолын төрөл вэ?", "Зохиол (проза)", "Яруу найраг", "Жүжиг", "Дуу"]
+];
+BANK.mn[10] = [
+  ["Уран зохиолын гурван төрлийн нэг нь аль нь вэ?", "Жүжиг", "Тайлан", "Захидал", "Хууль"],
+  ["«Алтан гар» хэллэг ямар утгатай вэ?", "Гарамгай, мэргэн", "Алтаар хийсэн гар", "Гар хөлдсөн", "Хурдан гүйгч"],
+  ["Албан хэргийн хэв шинжид аль нь хамаарах вэ?", "Өргөдөл", "Шүлэг", "Үлгэр", "Дуу"],
+  ["«Эх орон» үгтэй ойролцоо утгатай үг?", "Эх нутаг", "Тэнгэр", "Гараг", "Хот"],
+  ["«Монголын нууц товчоо» анх ямар бичгээр бичигдсэн бэ?", "Уйгур-Монгол бичгээр", "Кирилл бичгээр", "Латин бичгээр", "Хятад бичгээр"],
+  ["Эсрэгцэл (антитез) гэж юу вэ?", "Эсрэг утгыг зэрэгцүүлэх арга", "Үгийг давтах арга", "Хэтрүүлэн дүрслэх арга", "Хүнчлэх арга"],
+  ["Хэтрүүлэг (гипербол) гэж юу вэ?", "Юмны шинжийг хэтрүүлэн дүрслэх арга", "Эсрэг утгыг зэрэгцүүлэх", "Үгийг дахин хэлэх", "Хүн шиг дүрслэх"],
+  ["Зүйрлэл гэж юу вэ?", "Нэг зүйлийг нөгөөтэй харьцуулан дүрслэх арга", "Тоог хэтрүүлэх", "Үгийг хасах", "Дууриах үг"]
+];
+BANK.mn[11] = [
+  ["Роман ямар төрлийн зохиол вэ?", "Урт эпик зохиол (проза)", "Богино шүлэг", "Нэг үйлдэлт жүжиг", "Ардын дуу"],
+  ["Жүжгийн зохиолын гол онцлог аль нь вэ?", "Дүрүүдийн харилцан яриа", "Зөвхөн тоо", "Шүлгийн бадаг", "Тоо тоолол"],
+  ["Зохиолын «конфликт» гэж юу вэ?", "Дүрүүдийн эсрэгцэл, зөрчил", "Төгсгөл", "Гарчиг", "Зохиолч"],
+  ["Сэтгэл хөдлөлийг шууд илэрхийлдэг зохиолын төрөл?", "Уянгын шүлэг", "Роман", "Тайлан", "Хууль"],
+  ["«Гэсэр» ямар төрлийн бүтээл вэ?", "Баатарлаг тууль", "Орчин үеийн роман", "Сонин", "Шүлэг"],
+  ["«Жангар» ямар төрлийн бүтээл вэ?", "Баатарлаг тууль", "Роман", "Нийтлэл", "Өгүүлэл"],
+  ["Зохиолын эцсийн шийдэл буюу төгсгөлийг юу гэх вэ?", "Төгсгөл (шийдэл)", "Оргил", "Эхлэл", "Өрнөл"],
+  ["Зохиолын үйл явдлын хамгийн хурцадмал цэгийг юу гэх вэ?", "Оргил", "Эхлэл", "Төгсгөл", "Сэдэв"]
+];
+BANK.mn[12] = [
+  ["Д.Нацагдорж аль зуунд амьдарч бүтээсэн бэ?", "XX зуун", "XIII зуун", "XVII зуун", "XXI зуун"],
+  ["«Монголын нууц товчоо» ямар төрлийн дурсгал вэ?", "Түүх, уран зохиолын дурсгал", "Орчин үеийн роман", "Хөгжмийн зохиол", "Сурах бичиг"],
+  ["Эссэ гэж юу вэ?", "Өөрийн үзэл бодлыг чөлөөтэй илэрхийлсэн богино зохиол", "Тоон тайлан", "Хууль тогтоомж", "Хөгжмийн нот"],
+  ["Өгүүллэгийн гол сургамжийг юу гэх вэ?", "Гол санаа", "Нэр", "Хэмжээ", "Хугацаа"],
+  ["Шүлгийн «уянгын баатар» гэж хэнийг хэлдэг вэ?", "Шүлгээр сэтгэлээ илэрхийлж буй хүнийг", "Зохиолчийг", "Уншигчийг", "Хэвлэгчийг"],
+  ["Ишлэл гэж юу вэ?", "Бусдын үгийг үгчлэн авах", "Өөрийн санаа", "Тоон дүн", "Гарчиг"],
+  ["Орчуулгад хамгийн чухал зүйл?", "Эх бичвэрийн утгыг үнэн зөв дамжуулах", "Үгийг буруу хэрэглэх", "Зөвхөн хурд", "Зураг оруулах"],
+  ["Утга шилжүүлэн хэрэглэсэн үг хэллэгийг юу гэх вэ?", "Хэлц үг", "Тооны нэр", "Гарчиг", "Үсэг"]
+];
+
+BANK.en[1] = [
+  ["«Улаан» англиар?", "red", "blue", "green", "black"],
+  ["«Нохой» англиар?", "dog", "cat", "cow", "bird"],
+  ["«Hello» гэж юу гэсэн үг вэ?", "Сайн уу", "Баяртай", "Баярлалаа", "Уучлаарай"],
+  ["«Cat» гэж юу вэ?", "Муур", "Нохой", "Морь", "Хонь"],
+  ["«Three» гэдэг тоо аль нь вэ?", "3", "1", "2", "5"],
+  ["«Apple» гэж юу вэ?", "Алим", "Банана", "Жүрж", "Усан үзэм"],
+  ["«Goodbye» гэж юу гэсэн үг вэ?", "Баяртай", "Сайн уу", "Баярлалаа", "Тийм"],
+  ["«Blue» ямар өнгө вэ?", "Цэнхэр", "Улаан", "Ногоон", "Шар"]
+];
+BANK.en[2] = [
+  ["«Mother» гэж хэн бэ?", "Ээж", "Аав", "Ах", "Эгч"],
+  ["«Father» гэж хэн бэ?", "Аав", "Ээж", "Дүү", "Эмээ"],
+  ["Which one is a fruit?", "banana", "chair", "table", "pen"],
+  ["«Book» гэж юу вэ?", "Ном", "Үзэг", "Сандал", "Цүнх"],
+  ["Two + three = ?", "five", "four", "six", "seven"],
+  ["This is ___ apple.", "an", "a", "some", "two"],
+  ["«Thank you» гэж юу гэсэн үг вэ?", "Баярлалаа", "Уучлаарай", "Баяртай", "Сайн уу"],
+  ["«Green» ямар өнгө вэ?", "Ногоон", "Шар", "Хар", "Цагаан"]
+];
+BANK.en[3] = [
+  ["I ___ a student.", "am", "is", "are", "be"],
+  ["She ___ my sister.", "is", "am", "are", "be"],
+  ["Plural of «cat»?", "cats", "cates", "cat's", "cat"],
+  ["They ___ at school.", "are", "is", "am", "be"],
+  ["«Monday» гэж ямар гараг вэ?", "Даваа", "Мягмар", "Лхагва", "Пүрэв"],
+  ["Opposite of «big»?", "small", "tall", "long", "fast"],
+  ["How many legs does a dog have?", "four", "two", "six", "eight"],
+  ["What colour is the sky on a clear day?", "blue", "red", "black", "pink"]
+];
+BANK.en[4] = [
+  ["He ___ football every day.", "plays", "play", "playing", "played"],
+  ["The book is ___ the table.", "on", "at", "to", "of"],
+  ["Plural of «child»?", "children", "childs", "childes", "childrens"],
+  ["I ___ breakfast at 7 o'clock.", "have", "has", "having", "am have"],
+  ["Opposite of «hot»?", "cold", "warm", "dry", "sunny"],
+  ["«Wednesday» гэж ямар гараг вэ?", "Лхагва", "Пүрэв", "Баасан", "Бямба"],
+  ["She ___ to school by bus.", "goes", "go", "going", "gone"],
+  ["There ___ two apples on the plate.", "are", "is", "am", "be"]
+];
+BANK.en[5] = [
+  ["Past tense of «go»?", "went", "goed", "gone", "going"],
+  ["Yesterday I ___ to the park.", "went", "go", "goes", "going"],
+  ["Past tense of «eat»?", "ate", "eated", "eaten", "eats"],
+  ["Which word is a verb?", "run", "table", "happy", "blue"],
+  ["She is ___ than me. (tall)", "taller", "tallest", "more tall", "tall"],
+  ["Which sentence is correct?", "I don't like milk.", "I doesn't like milk.", "I not like milk.", "I no like milk."],
+  ["«Library» гэж юу вэ?", "Номын сан", "Эмийн сан", "Сургууль", "Цэцэрлэг"],
+  ["Opposite of «early»?", "late", "soon", "fast", "slow"]
+];
+BANK.en[6] = [
+  ["He is the ___ student in our class. (tall)", "tallest", "taller", "most tall", "tall"],
+  ["This book is ___ than that one. (interesting)", "more interesting", "interestinger", "most interesting", "interesting"],
+  ["I ___ TV now.", "am watching", "watch", "watched", "watches"],
+  ["Past tense of «see»?", "saw", "seen", "seed", "sees"],
+  ["There ___ some water in the glass.", "is", "are", "am", "were"],
+  ["She ___ her homework yesterday.", "did", "does", "do", "doing"],
+  ["Which one is a question?", "Where do you live?", "You live here.", "I live there.", "Live here."],
+  ["«Because» гэдэг үгийн утга?", "учир нь", "гэвч", "мөн", "эсвэл"]
+];
+BANK.en[7] = [
+  ["If it rains, we ___ at home.", "will stay", "stayed", "staying", "have stayed"],
+  ["I ___ you tomorrow. (call)", "will call", "called", "calling", "have call"],
+  ["He can ___ very fast.", "run", "runs", "running", "ran"],
+  ["You ___ smoke here. It is not allowed.", "mustn't", "can", "may", "should"],
+  ["She has lived here ___ 2010.", "since", "for", "from", "at"],
+  ["I have known him ___ five years.", "for", "since", "ago", "from"],
+  ["Which word is a noun?", "happiness", "happy", "happily", "happen"],
+  ["Plural of «mouse»?", "mice", "mouses", "mices", "mouse"]
+];
+BANK.en[8] = [
+  ["I have ___ my homework.", "finished", "finish", "finishing", "finishes"],
+  ["She ___ in London since 2020.", "has lived", "lived", "lives", "is living"],
+  ["If I ___ rich, I would travel the world.", "were", "am", "will be", "have been"],
+  ["The book ___ by millions of people.", "was read", "reads", "is reading", "has reading"],
+  ["Neither Tom ___ Mary is here.", "nor", "or", "and", "but"],
+  ["Their house is bigger than ___.", "ours", "our", "us", "we"],
+  ["Synonym of «big»?", "large", "tiny", "narrow", "thin"],
+  ["I wish I ___ more time.", "had", "have", "has", "will have"]
+];
+BANK.en[9] = [
+  ["The window ___ by the boy yesterday.", "was broken", "broke", "is broken", "has break"],
+  ["By the time we arrived, the film ___.", "had started", "started", "has started", "starts"],
+  ["He suggested ___ to the cinema.", "going", "to go", "go", "gone"],
+  ["I look forward to ___ you.", "seeing", "see", "saw", "seen"],
+  ["If she had studied, she ___ the exam.", "would have passed", "will pass", "would pass", "passed"],
+  ["Despite ___ tired, he finished the work.", "being", "be", "been", "is"],
+  ["The man ___ lives next door is a doctor.", "who", "which", "whose", "whom"],
+  ["She ___ the piano for ten years.", "has played", "plays", "play", "is play"]
+];
+BANK.en[10] = [
+  ["She is used to ___ early.", "getting up", "get up", "got up", "gets up"],
+  ["He denied ___ the window.", "breaking", "to break", "break", "broke"],
+  ["Which word means «careful»?", "cautious", "careless", "clumsy", "hasty"],
+  ["The more you practise, ___ you become.", "the better", "better", "best", "the best"],
+  ["She ___ to Paris three times.", "has been", "was", "is", "goes"],
+  ["The report ___ by Friday.", "will be finished", "will finish", "finishes", "finished"],
+  ["Unless you ___ hard, you will fail.", "study", "don't study", "studied", "will study"],
+  ["A synonym of «happy»?", "delighted", "furious", "anxious", "bored"]
+];
+BANK.en[11] = [
+  ["I'd like to ___ up smoking.", "give", "put", "sit", "wake"],
+  ["«Break a leg» means ___", "good luck", "get hurt", "run away", "stop"],
+  ["«Despite» means:", "in spite of", "because of", "as well as", "instead of"],
+  ["The meeting was ___ because the manager was ill.", "called off", "called on", "called at", "called in"],
+  ["Which sentence uses the passive voice?", "The cake was eaten by the kids.", "The kids ate the cake.", "The kids are eating cake.", "The kids will eat cake."],
+  ["She is ___ honest person.", "an", "a", "the", "some"],
+  ["He is good ___ mathematics.", "at", "in", "on", "for"],
+  ["Which word is a conjunction?", "although", "quickly", "table", "blue"]
+];
+BANK.en[12] = [
+  ["Hardly ___ the station when the train left.", "had we reached", "we reached", "did we reach", "we had reached"],
+  ["Not only ___ late, but he also forgot the keys.", "was he", "he was", "is he", "did he"],
+  ["Were I you, I ___ accept the offer.", "would", "will", "did", "had"],
+  ["Which word is closest in meaning to «ubiquitous»?", "everywhere", "rare", "ancient", "hidden"],
+  ["«Ephemeral» means:", "short-lived", "eternal", "heavy", "bright"],
+  ["Had I known, I ___ you.", "would have told", "will tell", "told", "would tell"],
+  ["Which sentence is correct?", "Neither of the answers is correct.", "Neither of the answers are correct.", "Neither answers is correct.", "Neither of answer is correct."],
+  ["He insisted that she ___ a doctor.", "see", "sees", "saw", "would saw"]
+];
+
+// Монгол бичиг: үсэг, үгийг Юникод кодоор өгсөн. Харагдах байдал нь төхөөрөмжийн фонтоос хамаарна
+var BL = [["ᠠ", "а"], ["ᠡ", "э"], ["ᠢ", "и"], ["ᠨ", "н"], ["ᠪ", "б"], ["ᠭ", "г"], ["ᠮ", "м"], ["ᠯ", "л"], ["ᠰ", "с"], ["ᠷ", "р"], ["ᠱ", "ш"], ["ᠴ", "ч"], ["ᠬ", "х"], ["ᠸ", "в"], ["ᠶ", "й"]];
+var BW = [["ᠮᠣᠷᠢ", "морь"], ["ᠨᠣᠬᠠᠢ", "нохой"], ["ᠭᠡᠷ", "гэр"], ["ᠬᠣᠨᠢ", "хонь"], ["ᠮᠣᠩᠭᠣᠯ", "Монгол"], ["ᠨᠠᠷᠠᠨ", "нар"], ["ᠤᠰᠤ", "ус"], ["ᠡᠴᠢᠭᠡ", "эцэг"]];
+BANK.bi.B = [
+  ["Монгол бичиг ямар чиглэлд бичигддэг вэ?", "Дээрээс доош, мөр нь зүүнээс баруун тийш", "Зүүнээс баруун тийш", "Баруунаас зүүн тийш", "Доороос дээш"],
+  ["Монгол бичгийн үсэг үгийн хаана байрлахаас хамаарч хэлбэр нь юу болдог вэ?", "Эхэн, дунд, төгсгөл хэлбэртэй болдог", "Нэг л хэлбэртэй", "Том, жижиг болдог", "Өнгөтэй болдог"],
+  ["Чингис хаан Тататунгаар ямар бичгийг монгол хэлэнд хэрэглүүлсэн бэ?", "Уйгур бичиг", "Хятад бичиг", "Төвд бичиг", "Кирилл бичиг"],
+  ["Тод бичгийг хэн зохиосон бэ?", "Зая бандида Намхайжамц", "Занабазар", "Пагба лам", "Чингис хаан"],
+  ["Соёмбо бичгийг хэн зохиосон бэ?", "Занабазар (Өндөр гэгээн)", "Зая бандида", "Пагба лам", "Тататунга"],
+  ["Хэвийн дөрвөлжин бичгийг хэн зохиосон бэ?", "Пагба лам", "Занабазар", "Зая бандида", "Тататунга"],
+  ["Монголд кирилл бичгийг албан ёсоор нэвтрүүлсэн үе?", "1940-өөд он", "1204 он", "1686 он", "1990-ээд он"],
+  ["Монгол бичиг ямар төрлийн бичиг вэ?", "Үсэгт (авиа заасан) бичиг", "Дүрс бичиг", "Тоон бичиг", "Өнгөт бичиг"]
+];
+BANK.bi.C = [
+  ["Хуучин монгол бичиг ямар бичгээс үүссэн бэ?", "Согд-Уйгур бичгээс", "Латин бичгээс", "Хятад иероглифээс", "Грек бичгээс"],
+  ["Тод бичгийг голчлон хэн хэрэглэж байв?", "Ойрад монголчууд", "Халхчууд", "Буриадууд", "Хятадууд"],
+  ["Хэвийн дөрвөлжин бичиг ямар зууны үед гарсан бэ?", "XIII зуун", "XVII зуун", "XIX зуун", "XX зуун"],
+  ["Соёмбо бичиг ямар зууны үед гарсан бэ?", "XVII зуун", "XIII зуун", "XIX зуун", "XX зуун"],
+  ["Монгол бичгийн «Али гали» гэж юу вэ?", "Гадаад үг бичих нэмэлт үсгүүд", "Хуулийн нэр", "Ном", "Хот"],
+  ["Монгол бичгийн мөр ямар чиглэлд шилждэг вэ?", "Зүүнээс баруун тийш", "Баруунаас зүүн тийш", "Доороос дээш", "Дээрээс доош"],
+  ["Кирилл бичиг Монголд албан ёсоор хэзээнээс хэрэглэгдэж эхэлсэн бэ?", "1940-өөд оноос", "1204 оноос", "1686 оноос", "1990-ээд оноос"],
+  ["Монгол бичгийн үсэг үгийн эхэнд, дунд, төгсгөлд өөр хэлбэртэй байдаг нь юуг харуулдаг вэ?", "Холбоотой бичигддэг онцлогийг", "Үсэг хэрэглэдэггүйг", "Зөвхөн том үсгийг", "Зөвхөн тоог"]
+];
+function letterQ(L, set) { return ["Энэ үсэг кириллээр аль нь вэ? {mb:" + L[0] + "}", L[1], shuffle(set.filter(function (x) { return x[1] !== L[1]; })).slice(0, 3).map(function (x) { return x[1]; })]; }
+function wordQ(W) { return ["Энэ үгийг кириллээр бичвэл? {mb:" + W[0] + "}", W[1], shuffle(BW.filter(function (x) { return x[1] !== W[1]; })).slice(0, 3).map(function (x) { return x[1]; })]; }
+function biItems(g) {
+  var set8 = BL.slice(0, 8);
+  if (g <= 2) return shuffle(set8).map(function (L) { return letterQ(L, set8); });
+  if (g <= 4) return shuffle(BW).map(wordQ);
+  if (g <= 6) return shuffle(shuffle(BL).slice(0, 5).map(function (L) { return letterQ(L, BL); }).concat(shuffle(BW).slice(0, 5).map(wordQ)));
+  return (g <= 9 ? BANK.bi.B : BANK.bi.C).map(function (r) { return [r[0], r[1], r.slice(2)]; });
+}
+
+function subjItems() {
+  if (subjKey === "math") {
+    var gens = MATH[grade], out = [], seen = {}, t = 0;
+    while (out.length < 10 && t++ < 400) { var it = pk(gens)(); if (!seen[it[0]]) { seen[it[0]] = 1; out.push(it); } }
+    return out;
+  }
+  if (subjKey === "bi") return biItems(grade);
+  return shuffle(BANK[subjKey][grade]).map(function (r) { return [r[0], r[1], r.slice(2)]; });
+}
+function newSubj() {
+  var qs = subjItems().slice(0, 10).map(function (it) { return { q: it[0], a: it[1], opts: shuffle([it[1]].concat(it[2])) }; });
+  sq = { qs: qs, i: 0, first: 0, wrong: false, locked: false, done: false };
+}
+function subjView() {
+  if (sq.done) { var r = sq.first / sq.qs.length; return resultHtml(r >= 0.9 ? 3 : r >= 0.6 ? 2 : 1, "Эхний оролдлогоор зөв: " + sq.first + " / " + sq.qs.length); }
+  var q = sq.qs[sq.i], dots = "";
+  for (var k = 0; k < sq.qs.length; k++) dots += '<i class="' + (k < sq.i ? "done" : k === sq.i ? "now" : "") + '"></i>';
+  var opts = q.opts.map(function (o, i) { return '<button class="opt c t" data-spick="' + i + '">' + esc(o) + '</button>'; }).join("");
+  return '<div class="level"><button class="btn alt" data-gstep="-1" aria-label="Өмнөх анги"' + (grade <= 1 ? " disabled" : "") + '>‹</button>' +
+    '<b class="gname">' + grade + '-р анги · ' + SUBJ[subjKey] + '</b>' +
+    '<button class="btn alt" data-gstep="1" aria-label="Дараах анги"' + (grade >= 12 ? " disabled" : "") + '>›</button></div>' +
+    '<div class="dots" aria-label="Асуулт ' + (sq.i + 1) + ' / ' + sq.qs.length + '">' + dots + '</div>' +
+    '<div class="card prompt"><div class="qtext' + (subjKey === "math" ? " qm" : "") + '">' + qHtml(q.q) + '</div></div><div class="opts t">' + opts + '</div>';
+}
+function subjClick(b) {
+  if (sq.locked) return;
+  var me = sq, q = sq.qs[sq.i], pick = q.opts[parseInt(b.dataset.spick, 10)];
+  if (pick === q.a) {
+    b.classList.add("ok"); burst(b, 14); sq.locked = true;
+    document.querySelectorAll(".opt").forEach(function (o) { o.disabled = true; });
+    if (!sq.wrong) { sq.first++; total++; saveTotal(); }
+    setTimeout(function () { if (sq !== me) return; sq.i++; sq.wrong = false; sq.locked = false; if (sq.i >= sq.qs.length) sq.done = true; render(); }, 850);
+  } else {
+    sq.wrong = true; b.classList.remove("no"); void b.offsetWidth; b.classList.add("no"); b.disabled = true;
+  }
+}
+
+function homeView() {
+  var subs = [
+    ["mn", "Аа", "Монгол хэл", "Үг, дүрэм, уран зохиол"],
+    ["math", "+−", "Математик", "Тооцоо, тэгшитгэл, функц"],
+    ["en", "Abc", "Англи хэл", "Үг, дүрэм, хэллэг"],
+    ["bi", "📜", "Монгол бичиг", "Үсэг, үг, түүх"]
+  ];
+  var games = [
+    ["case", "Аа", "Том, жижиг", "Том үсэгтэй адил жижиг үсгийг ол"],
+    ["first", "🍎", "Эхний үсэг", "Зураг ямар үсгээр эхэлдгийг ол"],
+    ["jump", "🐸", "Үсэг үсрэх", "Мэлхийг зөв үсэг дээр үсрүүл"],
+    ["build", "🧱", "Үг бүтээх", "Үсгийн блокоор зурагтай үгийг өр"],
+    ["pairs", "🃏", "Хос олох", "Том, жижиг үсгийн хосыг санаж ол"],
+    ["pop", "🎈", "Бөмбөлөг", "Хэлсэн үсэгтэй бөмбөлгийг хага"],
+    ["fill", "М_Р", "Дутуу үсэг", "Үгийн дутуу үсгийг нөхөж унш"]
+  ];
+  var chips = "";
+  for (var g = 1; g <= 12; g++) chips += '<button class="gchip" data-grade="' + g + '" aria-pressed="' + (g === grade) + '" aria-label="' + g + '-р анги">' + g + '</button>';
+  function card(attr, m) { return '<button class="mode" ' + attr + '="' + m[0] + '"><i class="badge" aria-hidden="true">' + m[1] + '</i><b>' + m[2] + '</b><span>' + m[3] + '</span></button>'; }
+  return '<div class="card hero"><span class="deco d3" aria-hidden="true">Я</span><span class="deco d4" aria-hidden="true">Х</span>' +
+    '<div class="letters" aria-hidden="true"><span class="big v">Аа</span><span class="big c">Бб</span><span class="big c">Вв</span></div>' +
+    '<h2>Хичээлээ тоглоомоор сур</h2><p>1–12 анги, 4 хичээл. Зөв хариулт бүрт од авна.</p>' +
+    '<button class="btn start" data-start="learn">Үсэг сурж эхлэх</button>' +
+    '<svg class="heroscene" aria-hidden="true"><use href="#steppe" width="100%" height="100%"/></svg></div>' +
+    '<p class="sec">Анги сонго</p><div class="grades">' + chips + '</div>' +
+    '<p class="sec">Хичээл сонго · ' + grade + '-р анги</p><div class="modes">' + subs.map(function (m) { return card("data-subject", m); }).join("") + '</div>' +
+    '<p class="sec">Цагаан толгойн тоглоомууд</p><div class="modes">' + games.map(function (m) { return card("data-start", m); }).join("") + '</div>';
+}
+
+// Цацраг: зөв хариулт, шагналын үед
+function burst(target, n) {
+  if (REDUCED || !target || !target.getBoundingClientRect || !document.body.animate) return;
+  var r = target.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  var fx = document.getElementById("fx");
+  if (!fx) { fx = document.createElement("div"); fx.id = "fx"; document.body.appendChild(fx); }
+  var cs = getComputedStyle(document.documentElement);
+  var colors = ["--accent", "--star", "--good", "--vowel-fg", "--cons-fg", "--bad"].map(function (k) { return cs.getPropertyValue(k).trim(); }).filter(Boolean);
+  for (var i = 0; i < n; i++) {
+    var p = document.createElement("span"), sz = 7 + Math.random() * 7;
+    p.className = "fx";
+    p.style.cssText = "width:" + sz + "px;height:" + sz * (Math.random() < 0.5 ? 1 : 0.6) + "px;background:" + colors[i % colors.length] + ";border-radius:" + (Math.random() < 0.5 ? "50%" : "2px") + ";left:" + cx + "px;top:" + cy + "px";
+    fx.appendChild(p);
+    var dx = (Math.random() - 0.5) * 280, up = -(50 + Math.random() * 150), rot = (Math.random() - 0.5) * 720;
+    var a = p.animate([
+      { transform: "translate(0,0) rotate(0deg)", opacity: 1 },
+      { transform: "translate(" + dx * 0.6 + "px," + up + "px) rotate(" + rot / 2 + "deg)", opacity: 1, offset: 0.45 },
+      { transform: "translate(" + dx + "px," + (up + 240) + "px) rotate(" + rot + "deg)", opacity: 0 }
+    ], { duration: 800 + Math.random() * 500, easing: "cubic-bezier(.2,.7,.4,1)" });
+    a.onfinish = (function (el) { return function () { el.remove(); }; })(p);
+  }
+}
+
+function render() {
+  document.getElementById("tabs").hidden = !started || mode === "subj";
+  document.getElementById("home").hidden = !started;
+  if (!started) { el.innerHTML = homeView(); return; }
+  if (mode === "learn") el.innerHTML = learnView();
+  else if (mode === "build") el.innerHTML = buildView();
+  else if (mode === "pairs") el.innerHTML = pairsView();
+  else if (mode === "pop") { el.innerHTML = popView(); if (!pp.done) popStart(); }
+  else if (mode === "subj") el.innerHTML = subjView();
+  else el.innerHTML = quizView();
+  document.querySelectorAll(".tab").forEach(function (t) { t.setAttribute("aria-selected", String(t.dataset.mode === mode)); });
+  var done = el.querySelector(".result .row"); if (done) burst(done, 44);
+}
+
+function setMode(m) {
+  mode = m;
+  startMode(m);
+  render();
+}
+
+document.querySelector(".tabs").addEventListener("click", function (e) {
+  var b = e.target.closest(".tab"); if (b) setMode(b.dataset.mode);
+});
+
+el.addEventListener("click", function (e) {
+  var b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.start) { started = true; setMode(b.dataset.start); return; }
+  if (b.dataset.subject) { subjKey = b.dataset.subject; started = true; mode = "subj"; startMode("subj"); render(); return; }
+  if (b.dataset.grade) { grade = parseInt(b.dataset.grade, 10); saveGrade(); render(); return; }
+  if (mode === "subj" && b.dataset.gstep) { grade = Math.max(1, Math.min(12, grade + parseInt(b.dataset.gstep, 10))); saveGrade(); newSubj(); render(); return; }
+  if (mode === "subj" && b.dataset.spick !== undefined) { subjClick(b); return; }
+  if (mode === "build" && (b.dataset.bank !== undefined || b.dataset.slot !== undefined)) { buildClick(b); return; }
+  if (mode === "pairs" && b.dataset.card !== undefined) { pairsClick(b); return; }
+  if (mode === "pop" && b.dataset.bubble !== undefined) { popClick(b); return; }
+  if (b.dataset.letter) { cur = b.dataset.letter; render(); }
+  else if (b.dataset.step) {
+    var idx = DATA.findIndex(function (d) { return d[0] === cur; });
+    idx = (idx + parseInt(b.dataset.step, 10) + DATA.length) % DATA.length; cur = DATA[idx][0]; render();
+  }
+  else if (b.dataset.say) { var d = byLetter[cur]; play(CLIPS["W:" + cur] ? "W:" + cur : "L:" + cur, d[1] || d[0]); }
+  else if (b.dataset.level) { level = b.dataset.level; startMode(mode); render(); }
+  else if (b.dataset.again) { startMode(mode); render(); }
+  else if (b.dataset.pick) {
+    if (quiz.locked) return;
+    var q = quiz.qs[quiz.i];
+    if (b.dataset.pick === q.t) {
+      b.classList.add("ok"); quiz.locked = true; burst(b, 14);
+      var gap = document.getElementById("gap"); if (gap) { gap.textContent = q.t; gap.classList.add("on"); }
+      document.querySelectorAll(".opt").forEach(function (o) { o.disabled = true; });
+      if (!quiz.wrong) { quiz.first++; total++; saveTotal(); bumpMiss(q.t, -1); }
+      setTimeout(function () {
+        quiz.i++; quiz.wrong = false; quiz.locked = false;
+        if (quiz.i >= quiz.qs.length) quiz.done = true;
+        render();
+      }, 850);
+    } else {
+      if (!quiz.wrong) bumpMiss(q.t, 1);
+      quiz.wrong = true; b.classList.remove("no"); void b.offsetWidth; b.classList.add("no"); b.disabled = true;
+    }
+  }
+});
+
+document.getElementById("home").addEventListener("click", function () { stopPop(); started = false; render(); });
+
+render();
+</script>
+</body>
+</html>
